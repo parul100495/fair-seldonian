@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+# Author: Parul Gupta
 
 # An expression tree node
 class expr_tree:
@@ -11,25 +11,37 @@ class expr_tree:
         self.right = None
 
 
-# A utility function to check if 'c' is an operator
+# A utility function to check if 'element' is an operator
 def isOperator(element):
     if element == '+' or element == '-' or element == '*' or element == '/' or element == '^':
         return True
     return False
 
+
+# A utility function to check if 'element' is mod function
 def isMod(element):
     if element == "|":
         return True
     return False
 
 
+# A utility function to check if 'element' is one of FP, FN, TP, TN
 def isFunc(element):
     if element.startswith("FP") or element.startswith("FN") or element.startswith("TP") or element.startswith("TN"):
         return True
     return False
 
+
 # Assumes that Y and predicted_y contain 0,1 binary classification
-def eval_estimate(element, Y, predicted_Y, T):
+# Suppose we are calculating for FP(A).
+# Assume X to be an indicator function defined only in case type=A
+# s.t. x_i = 1 if FP occurred for ith datapoint and x_i = 0 otherwise.
+# Our data samples can be assumed to be independent and identically distributed.
+# Our estimate of p, \hat{p} = 1/n * \sum(x_i).
+# We can safely count this as binomial random variable.
+# E[\hat{p}] = 1/n * np = p
+# As we do not know p, we approximate it to \hat{p}.
+def eval_estimate(element, Y=None, predicted_Y=None, T=None):
     error = np.subtract(Y, predicted_Y)
     # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
     type_attribute = element[3:-1]
@@ -39,16 +51,17 @@ def eval_estimate(element, Y, predicted_Y, T):
         estimate_array = pd.Series(np.ones_like(Y))[T.astype(str) == type_attribute]
         estimate_array = estimate_array[type_error == 0]
         estimate_array = estimate_array[type_Y == 1]
-        return len(estimate_array)
+        # print(len(estimate_array)/len(type_error))
+        return len(estimate_array)/len(type_error)
     elif element.startswith("TN"):
         estimate_array = pd.Series(np.ones_like(Y))[T.astype(str) == type_attribute]
         estimate_array = estimate_array[type_error == 0]
         estimate_array = estimate_array[type_Y == 0]
-        return len(estimate_array)
+        return len(estimate_array)/len(type_error)
     elif element.startswith("FP"):
-        return len(type_error[type_error==-1])
+        return len(type_error[type_error==-1])/len(type_error)
     elif element.startswith("FN"):
-        return len(type_error[type_error==-1])
+        return len(type_error[type_error==-1])/len(type_error)
     return None
 
 
@@ -60,7 +73,8 @@ def inorder(t_node):
         inorder(t_node.right)
 
 
-def eval_expr_tree(t_node, Y, predicted_Y, T):
+# To evaluate estimate of the expression tree
+def eval_expr_tree(t_node, Y=None, predicted_Y=None, T=None):
     if t_node is not None:
         x = eval_expr_tree(t_node.left, Y, predicted_Y, T)
         y = eval_expr_tree(t_node.right, Y, predicted_Y, T)
@@ -92,32 +106,7 @@ def eval_expr_tree(t_node, Y, predicted_Y, T):
     return None
 
 
-def eval_simple_expr_tree(t_node):
-    if t_node is not None:
-        x = eval_simple_expr_tree(t_node.left)
-        y = eval_simple_expr_tree(t_node.right)
-        if x is None:
-            return float(t_node.value)
-        elif y is None:
-            # only one unary operator supported
-            if isMod(t_node.value):
-                return abs(float(x))
-            return None
-        else:
-            if t_node.value == '+':
-                return x + y
-            elif t_node.value == '-':
-                return x - y
-            elif t_node.value == '*':
-                return x * y
-            elif t_node.value == '^':
-                return x ** y
-            elif t_node.value == '/':
-                return x / y
-            return None
-
-# Returns root of constructed tree for
-# given postfix expression
+# Returns root of constructed tree for given postfix expression
 def construct_expr_tree(rev_polish_notation):
     rev_polish_notation = rev_polish_notation.split(' ')
     stack = []
