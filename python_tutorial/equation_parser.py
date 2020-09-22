@@ -266,7 +266,7 @@ def eval_abs_bound(l_x, u_x):
         elif l_x >= 0 and u_x >= 0:
             return l_x, u_x
         elif l_x <= 0 <= u_x:
-            return min(-l_x, u_x), max(-l_x, u_x)
+            return 0, max(-l_x, u_x)
     return None, None
 
 
