@@ -145,7 +145,7 @@ def eval_expr_tree(t_node, Y=None, predicted_Y=None, T=None):
     return None
 
 
-def eval_estimate(element, Y=None, predicted_Y=None, T=None):
+def eval_estimate(element, Y, predicted_Y, T):
     """
     Assumes that Y and predicted_y contain 0,1 binary classification
     Suppose we are calculating for FP(A).
@@ -164,10 +164,16 @@ def eval_estimate(element, Y=None, predicted_Y=None, T=None):
     :return: estimate value: float
     """
     error = np.subtract(Y, predicted_Y)
+    # print(len(error))
     # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
     type_attribute = element[3:-1]
+
     type_Y = Y[T.astype(str) == type_attribute]
+    # print(element)
+    # for i in range(Y.size):
+    #     print(Y[i], str(T[i]), type_attribute)
     type_error = error[T.astype(str) == type_attribute]
+    # print(len(type_error))
     if element.startswith("TP"):
         estimate_array = pd.Series(np.ones_like(Y))[T.astype(str) == type_attribute]
         estimate_array = estimate_array[type_error == 0]
