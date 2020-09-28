@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import sys
 import ray
+ray.init()
 from equation_parser import *
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -151,7 +152,7 @@ def getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHat
 
 
 @ray.remote
-def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest):
+def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, ineq):
 
 	# Results of the Seldonian algorithm runs
 	seldonian_solutions_found = np.zeros((numTrials, numM))
@@ -183,7 +184,7 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest):
 			(trainX, trainY, trainT)  = generateData(m)
 
 			# Run the Quasi-Seldonian algorithm
-			(result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, Inequality.T_TEST)
+			(result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
 			if passedSafetyTest:
 				seldonian_solutions_found[trial, mIndex] = 1
 				trueMSE = -fHat(result, testX, testY)                               # Get the "true" mean squared error using the testData
@@ -225,12 +226,12 @@ if __name__ == "__main__":
 
 	# Create the behavioral constraints: each is a gHat function and a confidence level delta
 	gHats = [gHat1, gHat2]
-	deltas = [0.1, 0.1]
+	deltas = [0.05, 0.05]
 
 	if len(sys.argv) < 2:
 		print("\nUsage: python main_plotting.py [number_threads]")
-		print("       Assuming the default: 4")
-		nWorkers = 4  # Workers is the number of threads running experiments in parallel
+		print("       Assuming the default: 8")
+		nWorkers = 8  # Workers is the number of threads running experiments in parallel
 	else:
 		nWorkers = int(sys.argv[1])  # Workers is the number of threads running experiments in parallel
 	print(f"Running experiments on {nWorkers} threads")
@@ -252,8 +253,9 @@ if __name__ == "__main__":
 
 	# Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file
 	tic = timeit.default_timer()
-	_ = ray.get([run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest) for worker_id in
+	_ = ray.get([run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest, Inequality.T_TEST) for worker_id in
 				range(1, nWorkers + 1)])
 	toc = timeit.default_timer()
 	time_parallel = toc - tic  # Elapsed time in seconds
 	print(f"Time elapsed: {time_parallel}")
+	ray.shutdown()
