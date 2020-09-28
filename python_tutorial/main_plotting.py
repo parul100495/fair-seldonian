@@ -83,25 +83,32 @@ def gHat2(theta, X, Y, T, delta, ineq):
 
 
 def simple_logistic(X, Y):
-	X = np.expand_dims(X, axis=1)
-	Y = np.expand_dims(Y, axis=1)
-	reg = LogisticRegression().fit(X, Y)
-	theta0 = reg.intercept_[0]
-	theta1 = reg.coef_[0][0]
-	return np.array([theta0, theta1])
+	try:
+		X = np.expand_dims(X, axis=1)
+		Y = np.expand_dims(Y, axis=1)
+		reg = LogisticRegression(solver='lbfgs').fit(X, Y)
+		theta0 = reg.intercept_[0]
+		theta1 = reg.coef_[0][0]
+		return np.array([theta0, theta1])
+	except Exception as e:
+		print(e)
+		return None
 
 # Our Quasi-Seldonian linear regression algorithm operating over data (X,Y).
 # The pair of objects returned by QSA is the solution (first element) 
 # and a Boolean flag indicating whether a solution was found (second element).
 def QSA(X, Y, T, gHats, deltas, ineq):
 	candidateData_len = 0.40
-	candidateData_X, safetyData_X, candidateData_Y, safetyData_Y = train_test_split (
-		X, Y, test_size = 1 - candidateData_len, shuffle = False )
-	candidateData_T, safetyData_T = np.split ( T, [ int ( candidateData_len * T.size ), ] )
+	candidateData_X, safetyData_X, candidateData_Y, safetyData_Y = train_test_split(
+		X, Y, test_size = 1 - candidateData_len, shuffle = False)
+	candidateData_T, safetyData_T = np.split(T, [int(candidateData_len * T.size), ])
 
-	candidateSolution = getCandidateSolution ( candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq )
-	passedSafety = safetyTest ( candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq )
-	return [ candidateSolution, passedSafety ]
+	candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq)
+	if candidateSolution:
+		passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+		return [candidateSolution, passedSafety]
+	else:
+		return [None, False]
 
 
 # Run the safety test on a candidate solution. Returns true if the test is passed.
@@ -146,9 +153,12 @@ def getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHat
 	minimizer_method = 'Powell'
 	minimizer_options = {'disp': False}
 	initialSolution = simple_logistic(candidateData_X, candidateData_Y)
-	res = minimize(candidateObjective, x0=initialSolution, method=minimizer_method, options=minimizer_options,
-		args=(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq))
-	return res.x
+	if initialSolution:
+		res = minimize(candidateObjective, x0=initialSolution, method=minimizer_method, options=minimizer_options,
+			args=(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq))
+		return res.x
+	else:
+		return None
 
 
 @ray.remote
@@ -179,9 +189,40 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, ineq):
 		for (mIndex, m) in enumerate(ms):
 
 			# Generate the training data, D
-			base_seed         = (experiment_number * numTrials)+1
+			base_seed = (experiment_number * numTrials)+1
 			np.random.seed(base_seed+trial) # done to obtain common random numbers for all values of m			
 			(trainX, trainY, trainT)  = generateData(m)
+
+			# Run the logistic regression algorithm
+			theta = simple_logistic(trainX, trainY)  # Run least squares linear regression
+			if theta:
+				trueMSE = -fHat(theta, testX, testY)  # Get the "true" mean squared error using the testData
+				LS_failures_g1[
+					trial, mIndex] = 1 if trueMSE > 2.0 else 0  # Check if the first behavioral constraint was violated
+				LS_failures_g2[
+					trial, mIndex] = 1 if trueMSE < 1.25 else 0  # Check if the second behavioral constraint was violated
+				LS_fs[ trial, mIndex] = -trueMSE  # Store the "true" negative mean-squared error
+				print(
+					f"[(worker {worker_id}/{nWorkers}) simple_logistic   trial {trial + 1}/{numTrials}, m {m}] LS fHat over test data: {trueMSE:.10f}" )
+			else:
+				LS_solutions_found[trial, mIndex] = 0
+				LS_failures_g1[
+					trial, mIndex] = 1  # Check if the first behavioral constraint was violated
+				LS_failures_g2[
+					trial, mIndex] = 1 # Check if the second behavioral constraint was violated
+				LS_fs[trial, mIndex] = None  # Store the "true" negative mean-squared error
+				print(
+					f"[(worker {worker_id}/{nWorkers}) Skipping trial because of dirty dataset  trial {trial + 1}/{numTrials}, m {m}]")
+
+				seldonian_solutions_found[trial, mIndex] = 0  # A solution was not found
+				seldonian_failures_g1[trial, mIndex] = 0  # Returning NSF means the first constraint was not violated
+				seldonian_failures_g2[
+					trial, mIndex] = 0  # Returning NSF means the second constraint was not violated
+				seldonian_fs[
+					trial, mIndex] = None  # This value should not be used later. We use None and later remove the None values
+				print(
+					f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial + 1}/{numTrials}, m {m}] No solution found")
+				continue
 
 			# Run the Quasi-Seldonian algorithm
 			(result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
@@ -199,14 +240,7 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, ineq):
 				seldonian_fs[trial, mIndex]              = None          # This value should not be used later. We use None and later remove the None values
 				print(f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial+1}/{numTrials}, m {m}] No solution found")
 
-			# Run the logistic regression algorithm
-			theta = simple_logistic(trainX, trainY)                              # Run least squares linear regression
-			trueMSE = -fHat(theta, testX, testY)                         # Get the "true" mean squared error using the testData
-			LS_failures_g1[trial, mIndex] = 1 if trueMSE > 2.0  else 0   # Check if the first behavioral constraint was violated
-			LS_failures_g2[trial, mIndex] = 1 if trueMSE < 1.25 else 0   # Check if the second behavioral constraint was violated
-			LS_fs[trial, mIndex] = -trueMSE                              # Store the "true" negative mean-squared error
-			print(f"[(worker {worker_id}/{nWorkers}) simple_logistic   trial {trial+1}/{numTrials}, m {m}] LS fHat over test data: {trueMSE:.10f}")
-		print()
+				print()
 
 	np.savez(outputFile, 
 			 ms=ms, 
@@ -244,7 +278,7 @@ if __name__ == "__main__":
 	numM = len(ms)
 
 	# How many trials should we average over?
-	numTrials = 70  # We pick 70 because with 70 trials per worker, and 16 workers, we get >1000 trials for each value of m
+	numTrials = 40  # We pick 70 because with 70 trials per worker, and 16 workers, we get >1000 trials for each value of m
 
 	# How much data should we generate to compute the estimates of the primary objective and behavioral constraint function values
 	# that we call "ground truth"? Each candidate solution deemed safe, and identified using limited training data, will be evaluated
