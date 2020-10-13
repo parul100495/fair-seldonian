@@ -164,7 +164,6 @@ def eval_estimate(element, Y, predicted_Y, T):
     :return: estimate value: float
     """
     error = np.subtract(Y, predicted_Y)
-    # print(len(error))
     # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
     type_attribute = element[3:-1]
 

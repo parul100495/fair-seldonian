@@ -1,6 +1,6 @@
 from helper import *        # Basic helper functions
 import timeit               # To time the execution of ours experiments
-from numba import jit, njit       # Just-in-Time (JIT) compiler to accelerate Python code
+from numba import jit       # Just-in-Time (JIT) compiler to accelerate Python code
 import math
 import pandas as pd
 import numpy as np
@@ -45,7 +45,6 @@ def predict(theta, x):
 
 
 # Estimator of the primary objective - negative of the log loss
-#@jit(nopython=True)
 def fHat(theta, X, Y):
 	n = X.size
 	predicted_Y = np.empty((n,))
@@ -56,7 +55,6 @@ def fHat(theta, X, Y):
 
 
 # Fairness constraint - True positive rate difference less than 0.1
-#@jit(nopython=True)
 def gHat1(theta, X, Y, T, delta, ineq):
 	n = X.size
 	predicted_Y = np.empty((n,))
@@ -69,7 +67,6 @@ def gHat1(theta, X, Y, T, delta, ineq):
 	return u
 
 # Fairness constraint - True positive rate difference greater than -0.1
-#@jit(nopython=True)
 def gHat2(theta, X, Y, T, delta, ineq):
 	n = X.size
 	predicted_Y = np.empty((n,))
@@ -81,6 +78,17 @@ def gHat2(theta, X, Y, T, delta, ineq):
 	# res = -0.1 - u
 	return u
 
+def eval_ghat(theta, X, Y, T, delta, ineq):
+	n = X.size
+	predicted_Y = np.empty((n,))
+	for i in range(n):
+		predicted_Y[i] = predict(theta, X[i])
+	rev_polish_notation = "TP(0.0) TP(1.0) - abs 0.1 -"
+	r = construct_expr_tree ( rev_polish_notation )
+	_, u = eval_expr_tree_conf_interval ( r, pd.Series ( Y ), pd.Series ( predicted_Y ), pd.Series ( T ), delta, ineq )
+	if u <= 0:
+		return 0
+	return 1
 
 def simple_logistic(X, Y):
 	try:
@@ -104,7 +112,7 @@ def QSA(X, Y, T, gHats, deltas, ineq):
 	candidateData_T, safetyData_T = np.split(T, [int(candidateData_len * T.size), ])
 
 	candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq)
-	if candidateSolution:
+	if candidateSolution is not None:
 		passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
 		return [candidateSolution, passedSafety]
 	else:
@@ -153,7 +161,7 @@ def getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHat
 	minimizer_method = 'Powell'
 	minimizer_options = {'disp': False}
 	initialSolution = simple_logistic(candidateData_X, candidateData_Y)
-	if initialSolution:
+	if initialSolution is not None:
 		res = minimize(candidateObjective, x0=initialSolution, method=minimizer_method, options=minimizer_options,
 			args=(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq))
 		return res.x
@@ -187,60 +195,61 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, ineq):
 
 	for trial in range(numTrials):
 		for (mIndex, m) in enumerate(ms):
+			try:
+				# Generate the training data, D
+				base_seed = (experiment_number * numTrials)+1
+				np.random.seed(base_seed+trial)  # done to obtain common random numbers for all values of m
+				(trainX, trainY, trainT)  = generateData(m)
 
-			# Generate the training data, D
-			base_seed = (experiment_number * numTrials)+1
-			np.random.seed(base_seed+trial) # done to obtain common random numbers for all values of m			
-			(trainX, trainY, trainT)  = generateData(m)
+				# Run the logistic regression algorithm
+				theta = simple_logistic(trainX, trainY)  # Run least squares linear regression
+				if theta is not None:
+					trueMSE = -fHat(theta, testX, testY)  # Get the "true" mean squared error using the testData
+					LS_failures_g1[
+						trial, mIndex] = eval_ghat(theta, testX, testY, testT, deltas[0], ineq)  # Check if the first behavioral constraint was violated
+					LS_failures_g2[
+						trial, mIndex] = 1 if trueMSE < 1.25 else 0  # Check if the second behavioral constraint was violated
+					LS_fs[trial, mIndex] = -trueMSE  # Store the "true" negative mean-squared error
+					print(
+						f"[(worker {worker_id}/{nWorkers}) simple_logistic   trial {trial + 1}/{numTrials}, m {m}] LS fHat over test data: {trueMSE:.10f}" )
+				else:
+					LS_solutions_found[trial, mIndex] = 0
+					LS_failures_g1[
+						trial, mIndex] = 1  # Check if the first behavioral constraint was violated
+					LS_failures_g2[
+						trial, mIndex] = 1 # Check if the second behavioral constraint was violated
+					LS_fs[trial, mIndex] = None  # Store the "true" negative mean-squared error
+					print(
+						f"[(worker {worker_id}/{nWorkers}) Skipping trial because of dirty dataset  trial {trial + 1}/{numTrials}, m {m}]")
 
-			# Run the logistic regression algorithm
-			theta = simple_logistic(trainX, trainY)  # Run least squares linear regression
-			if theta:
-				trueMSE = -fHat(theta, testX, testY)  # Get the "true" mean squared error using the testData
-				LS_failures_g1[
-					trial, mIndex] = 1 if trueMSE > 2.0 else 0  # Check if the first behavioral constraint was violated
-				LS_failures_g2[
-					trial, mIndex] = 1 if trueMSE < 1.25 else 0  # Check if the second behavioral constraint was violated
-				LS_fs[ trial, mIndex] = -trueMSE  # Store the "true" negative mean-squared error
-				print(
-					f"[(worker {worker_id}/{nWorkers}) simple_logistic   trial {trial + 1}/{numTrials}, m {m}] LS fHat over test data: {trueMSE:.10f}" )
-			else:
-				LS_solutions_found[trial, mIndex] = 0
-				LS_failures_g1[
-					trial, mIndex] = 1  # Check if the first behavioral constraint was violated
-				LS_failures_g2[
-					trial, mIndex] = 1 # Check if the second behavioral constraint was violated
-				LS_fs[trial, mIndex] = None  # Store the "true" negative mean-squared error
-				print(
-					f"[(worker {worker_id}/{nWorkers}) Skipping trial because of dirty dataset  trial {trial + 1}/{numTrials}, m {m}]")
+					seldonian_solutions_found[trial, mIndex] = 0  # A solution was not found
+					seldonian_failures_g1[trial, mIndex] = 0  # Returning NSF means the first constraint was not violated
+					seldonian_failures_g2[
+						trial, mIndex] = 0  # Returning NSF means the second constraint was not violated
+					seldonian_fs[
+						trial, mIndex] = None  # This value should not be used later. We use None and later remove the None values
+					print(
+						f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial + 1}/{numTrials}, m {m}] No solution found")
+					continue
 
-				seldonian_solutions_found[trial, mIndex] = 0  # A solution was not found
-				seldonian_failures_g1[trial, mIndex] = 0  # Returning NSF means the first constraint was not violated
-				seldonian_failures_g2[
-					trial, mIndex] = 0  # Returning NSF means the second constraint was not violated
-				seldonian_fs[
-					trial, mIndex] = None  # This value should not be used later. We use None and later remove the None values
-				print(
-					f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial + 1}/{numTrials}, m {m}] No solution found")
-				continue
+				# Run the Quasi-Seldonian algorithm
+				(result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+				if passedSafetyTest:
+					seldonian_solutions_found[trial, mIndex] = 1
+					trueMSE = -fHat(result, testX, testY)                               # Get the "true" mean squared error using the testData
+					seldonian_failures_g1[trial, mIndex] = eval_ghat(result, testX, testY, testT, deltas[0], ineq)
+					seldonian_failures_g2[trial, mIndex] = 1 if trueMSE < 1.25 else 0	# Check if the second behavioral constraint was violated
+					seldonian_fs[trial, mIndex] = -trueMSE                              # Store the "true" negative mean-squared error
+					print(f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial+1}/{numTrials}, m {m}] A solution was found: [{result[0]:.10f}, {result[1]:.10f}]\tfHat over test data: {trueMSE:.10f}")
+				else:
+					seldonian_solutions_found[trial, mIndex] = 0             # A solution was not found
+					seldonian_failures_g1[trial, mIndex]     = 0             # Returning NSF means the first constraint was not violated
+					seldonian_fs[trial, mIndex]              = None          # This value should not be used later. We use None and later remove the None values
+					print(f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial+1}/{numTrials}, m {m}] No solution found")
 
-			# Run the Quasi-Seldonian algorithm
-			(result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
-			if passedSafetyTest:
-				seldonian_solutions_found[trial, mIndex] = 1
-				trueMSE = -fHat(result, testX, testY)                               # Get the "true" mean squared error using the testData
-				seldonian_failures_g1[trial, mIndex] = 1 if trueMSE > 2.0  else 0   # Check if the first behavioral constraint was violated
-				seldonian_failures_g2[trial, mIndex] = 1 if trueMSE < 1.25 else 0	# Check if the second behavioral constraint was violated
-				seldonian_fs[trial, mIndex] = -trueMSE                              # Store the "true" negative mean-squared error
-				print(f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial+1}/{numTrials}, m {m}] A solution was found: [{result[0]:.10f}, {result[1]:.10f}]\tfHat over test data: {trueMSE:.10f}")
-			else:
-				seldonian_solutions_found[trial, mIndex] = 0             # A solution was not found
-				seldonian_failures_g1[trial, mIndex]     = 0             # Returning NSF means the first constraint was not violated
-				seldonian_failures_g2[trial, mIndex]     = 0             # Returning NSF means the second constraint was not violated
-				seldonian_fs[trial, mIndex]              = None          # This value should not be used later. We use None and later remove the None values
-				print(f"[(worker {worker_id}/{nWorkers}) Seldonian trial {trial+1}/{numTrials}, m {m}] No solution found")
-
-				print()
+					print()
+			except Exception as e:
+				print(e)
 
 	np.savez(outputFile, 
 			 ms=ms, 
@@ -250,8 +259,7 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, ineq):
 			 seldonian_failures_g2=seldonian_failures_g2,
 			 LS_solutions_found=LS_solutions_found,
 			 LS_fs=LS_fs,
-			 LS_failures_g1=LS_failures_g1,
-			 LS_failures_g2=LS_failures_g2)
+			 LS_failures_g1=LS_failures_g1)
 	print(f"Saved the file {outputFile}")
 
 
@@ -259,13 +267,13 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, ineq):
 if __name__ == "__main__":
 
 	# Create the behavioral constraints: each is a gHat function and a confidence level delta
-	gHats = [gHat1, gHat2]
-	deltas = [0.05, 0.05]
+	gHats = [gHat1]
+	deltas = [0.05]
 
 	if len(sys.argv) < 2:
 		print("\nUsage: python main_plotting.py [number_threads]")
-		print("       Assuming the default: 8")
-		nWorkers = 8  # Workers is the number of threads running experiments in parallel
+		print("       Assuming the default: 4")
+		nWorkers = 4  # Workers is the number of threads running experiments in parallel
 	else:
 		nWorkers = int(sys.argv[1])  # Workers is the number of threads running experiments in parallel
 	print(f"Running experiments on {nWorkers} threads")
@@ -274,11 +282,11 @@ if __name__ == "__main__":
 	# These values correspond to the horizontal axis locations in all three plots we will make.
 	# We will use a logarithmic horizontal axis, so the amounts of data we use shouldn't be evenly spaced.
 	ms = [2 ** i for i in
-		  range(5, 17)]  # ms = [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+		  range(5, 17)]  # ms = [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
 	numM = len(ms)
 
-	# How many trials should we average over?
-	numTrials = 40  # We pick 70 because with 70 trials per worker, and 16 workers, we get >1000 trials for each value of m
+	# How many trials should we averagresulte over?
+	numTrials = 15  # We pick 70 because with 70 trials per worker, and 16 workers, we get >1000 trials for each value of m
 
 	# How much data should we generate to compute the estimates of the primary objective and behavioral constraint function values
 	# that we call "ground truth"? Each candidate solution deemed safe, and identified using limited training data, will be evaluated

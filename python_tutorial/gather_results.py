@@ -28,7 +28,7 @@ def addMoreResults(newFileId, ms, seldonian_solutions_found, seldonian_fs, seldo
 	new_LS_solutions_found        = newFile['LS_solutions_found']
 	new_LS_fs                     = newFile['LS_fs']
 	new_LS_failures_g1            = newFile['LS_failures_g1']
-	new_LS_failures_g2            = newFile['LS_failures_g2']
+	new_LS_failures_g2            = None  #newFile['LS_failures_g2']
 
 	if type(ms)==type(None):
 		return [new_ms, new_seldonian_solutions_found, new_seldonian_fs, new_seldonian_failures_g1, new_seldonian_failures_g2,
@@ -108,5 +108,5 @@ def gather_results():
 	saveToCSV(ms, -seldonian_fs,              -LS_fs,              csv_path+'fs.csv') # here, negative to return MSE rather than negative MSE
 	saveToCSV(ms,  seldonian_solutions_found,  LS_solutions_found, csv_path+'solutions_found.csv')
 	saveToCSV(ms,  seldonian_failures_g1,      LS_failures_g1,     csv_path+'failures_g1.csv')
-	saveToCSV(ms,  seldonian_failures_g2,      LS_failures_g2,     csv_path+'failures_g2.csv')
+	#saveToCSV(ms,  seldonian_failures_g2,      LS_failures_g2,     csv_path+'failures_g2.csv')
 
