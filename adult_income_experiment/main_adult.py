@@ -10,6 +10,7 @@ logging.basicConfig(filename='main_adult.py',level=logging.INFO)
 ray.shutdown()
 ray.init()
 from equation_parser import *
+from test_data import *
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss
@@ -47,9 +48,10 @@ def get_adult_data():
 def generateData(frac, All, random_state, mTest):
     all_train, all_test, y_train, y_test = train_test_split(All, All.iloc[:, -1], test_size=mTest, random_state=42)
     # test dataset
+    test_tmp = all_test.iloc[:, :-1]
     T_test = all_test.iloc[:, -1]
-    X_test = all_test.iloc[:, :-1]
-    Y_test = all_test.iloc[:, -1]
+    X_test = test_tmp.iloc[:, :-1]
+    Y_test = test_tmp.iloc[:, -1]
 
     # train dataset
     subsampling = all_train.sample(frac=frac, random_state=random_state)
@@ -65,10 +67,11 @@ def generateData(frac, All, random_state, mTest):
 # simple logistic regression classifier
 @jit(nopython=True)
 def predict(theta, x):
-    power_value = theta[12] + theta[0]*x[0] + theta[1]*x[1] + theta[2]*x[2] +\
-                  theta[3]*x[3] + theta[4]*x[4] + theta[5]*x[5] + theta[6]*x[6] +\
-                  theta[7]*x[7] + theta[8]*x[8] + theta[9]*x[9] + theta[10]*x[10] +\
-                  theta[11]*x[11]
+    # power_value = theta[12] + theta[0]*x[0] + theta[1]*x[1] + theta[2]*x[2] +\
+    #               theta[3]*x[3] + theta[4]*x[4] + theta[5]*x[5] + theta[6]*x[6] +\
+    #               theta[7]*x[7] + theta[8]*x[8] + theta[9]*x[9] + theta[10]*x[10] +\
+    #               theta[11]*x[11]
+    power_value = theta[5] + theta[0]*x[0] + theta[1]*x[1] + theta[2]*x[2] + theta[3]*x[3] + theta[4]*x[4]
     denominator = 1 + math.exp(-power_value)
     prob_value = 1 / denominator
     if prob_value > 0.5:
@@ -93,10 +96,11 @@ def gHat1(theta, X, Y, T, delta, ineq, predict_bound, d2):
     predicted_Y = np.empty((n,))
     for i in range(n):
         predicted_Y[i] = predict(theta, X[i])
-    rev_polish_notation = "TP(0) TP(1) - abs 0.08 -"
+    rev_polish_notation = "TP(0) TP(1) - abs 0.1 -"
     r = construct_expr_tree(rev_polish_notation)
     _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
                                               ineq, predict_bound, d2)
+    # print(u)
     return u
 
 
@@ -112,8 +116,9 @@ def simple_logistic(X, Y):
         reg = LogisticRegression(solver = 'lbfgs').fit(X, Y)
         theta0 = reg.intercept_[0]
         theta1 = reg.coef_[0]
-        return np.array([theta1[0], theta1[1], theta1[2], theta1[3], theta1[4], theta1[5],
-                         theta1[6], theta1[7], theta1[8], theta1[9], theta1[10], theta1[11], theta0])
+        # return np.array([theta1[0], theta1[1], theta1[2], theta1[3], theta1[4], theta1[5],
+        #                  theta1[6], theta1[7], theta1[8], theta1[9], theta1[10], theta1[11], theta0])
+        return np.array([theta1[0], theta1[1], theta1[2], theta1[3], theta1[4], theta0])
     except Exception as e:
         print("Exception in logRes:", e)
         return None
@@ -127,8 +132,9 @@ def QSA(X, Y, T, gHats, deltas, ineq):
     candidateData_T, safetyData_T = np.split(T, [int(candidateData_len * T.size), ])
 
     candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq, safetyData_X.shape[0])
+    print("candidate solution upperbound: ", gHat1(candidateSolution, candidateData_X, candidateData_Y, candidateData_T, deltas[0], ineq, False, None))
     if candidateSolution is not None:
-        passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq )
+        passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
         return [candidateSolution, passedSafety]
     else:
         return [ None, False ]
@@ -143,6 +149,7 @@ def safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHat
         g = gHats[i]
         delta = deltas[i]
         upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+        print("safety test upper bound: ", upperBound)
         if upperBound > 0.0:
             return False
     return True
@@ -163,7 +170,7 @@ def candidateObjective(thetaToEvaluate, candidateData_X, candidateData_Y, candid
         if upperBound > 0.0:
             if predictSafetyTest:
                 predictSafetyTest = False
-                result = -100000.0
+                result = -1000.0
             result = result - upperBound
     return -result
 
@@ -174,8 +181,9 @@ def candidateObjective(thetaToEvaluate, candidateData_X, candidateData_Y, candid
 #    safetyDataSize: |D2|, used when computing the conservative upper bound on each behavioral constraint.
 def getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq, safety_size):
     minimizer_method = 'Powell'
-    minimizer_options = {'disp': False, 'maxiter': 1000}
+    minimizer_options = {'disp': False}
     initialSolution = simple_logistic(candidateData_X, candidateData_Y)
+    print("LS upperbound: ", gHat1(initialSolution, candidateData_X, candidateData_Y, candidateData_T, deltas[0], ineq, False, None))
     if initialSolution is not None:
         res = minimize(candidateObjective, x0 = initialSolution, method = minimizer_method,
                          options = minimizer_options,
@@ -292,14 +300,16 @@ if __name__ == "__main__":
     deltas = [0.05]
 
     # get data
-    _, _, _, All = get_adult_data()
+    #_, _, _, All = get_adult_data()
+
+    _, _, _, All = get_data(30000, 5, 0.5, 0.55, 0.7)
     print("Assuming the default: 16")
     nWorkers = 2
     print(f"Running experiments on {nWorkers} threads")
 
     ms = np.logspace(-1.4, 0, num=2)
     numM = len(ms)
-    numTrials = 3  # 65 * 16 = 1040 samples per fraction
+    numTrials = 2  # 65 * 16 = 1040 samples per fraction
     mTest = 0.2  # about 6500 test samples = fraction of total data
 
     # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file

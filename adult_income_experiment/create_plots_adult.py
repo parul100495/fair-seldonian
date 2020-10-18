@@ -10,13 +10,13 @@ def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc)
     file_ms, file_QSA, file_QSA_stderror, file_LS, file_LS_stderror = np.loadtxt(fileName, delimiter = ',',
                                                                                    unpack = True )
 
-    fig = plt.figure ()
+    fig = plt.figure()
 
-    plt.xlim ( min ( file_ms ), max ( file_ms ) )
-    plt.xlabel ( "Amount of data (m)", fontsize = 16 )
-    plt.xscale ( 'log' )
-    plt.xticks ( fontsize = 12 )
-    plt.ylabel ( ylabel, fontsize = 16 )
+    plt.xlim( min ( file_ms ), max ( file_ms ) )
+    plt.xlabel( "Amount of data (m)", fontsize = 16 )
+    plt.xscale( 'log' )
+    plt.xticks( fontsize = 12 )
+    plt.ylabel( ylabel, fontsize = 16 )
 
     if is_yAxis_prob:
         plt.ylim ( -0.1, 1.1 )
