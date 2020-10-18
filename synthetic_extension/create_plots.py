@@ -12,7 +12,7 @@ def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc)
 
     fig = plt.figure()
 
-    plt.xlim( min ( file_ms ), max ( file_ms ) )
+    plt.xlim(min(file_ms), max(file_ms))
     plt.xlabel( "Amount of data (m)", fontsize = 16 )
     #plt.xscale( 'log' )
     plt.xticks( fontsize = 12 )

@@ -9,14 +9,13 @@ import logging
 logging.basicConfig(filename='main_adult.py', level=logging.INFO)
 ray.shutdown()
 ray.init()
-from equation_parser import *
+from equation_parser_extension import *
 from test_data import *
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss
 from scipy.optimize import minimize
-import shap
-from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
+
 
 # Folder where the experiment results will be saved
 bin_path = 'experiment_results/bin/'
@@ -71,10 +70,9 @@ def gHat1(theta, X, Y, T, delta, ineq, predict_bound, d2):
     for i in range(n):
         predicted_Y[i] = predict(theta, X[i])
     rev_polish_notation = "TP(0) TP(1) - abs 0.1 -"
-    r = construct_expr_tree(rev_polish_notation)
-    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+    r = construct_expr_tree(rev_polish_notation, delta)
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T),
                                               ineq, predict_bound, d2)
-    # print(u)
     return u
 
 
