@@ -18,7 +18,7 @@ from scipy.optimize import minimize
 
 
 # Folder where the experiment results will be saved
-bin_path = 'experiment_results/bin/'
+bin_path = 'hextend/experiment_results/bin/'
 
 
 # Generate numPoints data points
@@ -69,7 +69,7 @@ def gHat1(theta, X, Y, T, delta, ineq, predict_bound, d2):
     predicted_Y = np.empty((n,))
     for i in range(n):
         predicted_Y[i] = predict(theta, X[i])
-    rev_polish_notation = "TP(0) TP(1) - abs 0.1 -"
+    rev_polish_notation = "TP(0) TP(1) - abs 0.2 TP(1) * -"
     r = construct_expr_tree(rev_polish_notation, delta)
     _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T),
                                               ineq, predict_bound, d2)
@@ -153,7 +153,7 @@ def candidateObjective(thetaToEvaluate, candidateData_X, candidateData_Y, candid
 #    safetyDataSize: |D2|, used when computing the conservative upper bound on each behavioral constraint.
 def getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq, safety_size):
     minimizer_method = 'Powell'
-    minimizer_options = {'disp': False}
+    minimizer_options = {'disp': False, 'maxiter': 5000}
     initialSolution = simple_logistic(candidateData_X, candidateData_Y)
     print("LS upperbound: ", gHat1(initialSolution, candidateData_X, candidateData_Y, candidateData_T, deltas[0], ineq, False, None))
     if initialSolution is not None:
@@ -272,15 +272,15 @@ if __name__ == "__main__":
     deltas = [0.05]
 
     # get data
-    _, _, _, All = get_data(30000, 5, 0.5, 0.5, 0.7)
+    _, _, _, All = get_data(300000, 5, 0.5, 0.5, 0.7)
     print("Assuming the default: 16")
-    nWorkers = 4
+    nWorkers = 8
     print(f"Running experiments on {nWorkers} threads")
 
     #ms = np.logspace(-1.4, 0, num=6)  # 6 fractions
-    ms = np.linspace(0.1, 1, num = 6)
+    ms = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
     numM = len(ms)
-    numTrials = 5  # 5 * 4 = 20 samples per fraction
+    numTrials = 4  # 4 * 8 = 32 samples per fraction
     mTest = 0.2  # about 0.2 * 30000 test samples = fraction of total data
 
     # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file
