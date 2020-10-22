@@ -124,12 +124,12 @@ if __name__ == "__main__":
     # get data
     # _, _, _, All = get_data(1000000000, 5, 0.5, 0.5, 0.7)
     print("Assuming the default: 16")
-    nWorkers = 24
+    nWorkers = 2
     print(f"Running experiments on {nWorkers} threads")
-    N = 1000000000
-    ms = np.logspace(-6, 0, num=30)  # 6 fractions
+    N = 1000
+    ms = np.logspace(-1, 0, num=2)  # 6 fractions
     numM = len(ms)
-    numTrials = 4  # 4 * 8 = 32 samples per fraction
+    numTrials = 2  # 4 * 8 = 32 samples per fraction
     mTest = 0.2  # about 0.2 * 1000000000 test samples = fraction of total data
 
     # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file
@@ -141,3 +141,139 @@ if __name__ == "__main__":
     time_parallel = toc - tic  # Elapsed time in seconds
     print(f"Time elapsed: {time_parallel}")
     ray.shutdown()
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+ERROR:root:The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+Traceback (most recent call last):
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/main.py", line 80, in run_experiments
+    (result, passedSafetyTest) = QSA(trainX, trainY, trainT, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 20, in QSA
+    passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/qsa.py", line 31, in safetyTest
+    upperBound = g(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, delta, ineq, False, None)
+  File "/Users/parulgupta/Documents/GitHub/fair-work/swarm_work/logistic_regression_functions.py", line 41, in gHat1
+    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/series.py", line 202, in __init__
+    if is_empty_data(data) and dtype is None:
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/construction.py", line 586, in is_empty_data
+    is_simple_empty = is_list_like_without_dtype and not data
+  File "/Users/parulgupta/anaconda3/lib/python3.7/site-packages/pandas/core/generic.py", line 1479, in __nonzero__
+    f"The truth value of a {type(self).__name__} is ambiguous. "
+ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().

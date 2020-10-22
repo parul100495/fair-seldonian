@@ -1,10 +1,12 @@
 import numpy as np
 import pandas as pd
+import sys
 import math
 from enum import Enum
 from scipy import stats
 # Author: Parul Gupta
-
+import logging
+logging.basicConfig(filename='main.py', level=logging.INFO)
 
 ####################
 # Construct Parser #
@@ -166,13 +168,8 @@ def eval_estimate(element, Y, predicted_Y, T):
     error = np.subtract(Y, predicted_Y)
     # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
     type_attribute = element[3:-1]
-
     type_Y = Y[T.astype(str) == type_attribute]
-    # print(element)
-    # for i in range(Y.size):
-    #     print(Y[i], str(T[i]), type_attribute)
     type_error = error[T.astype(str) == type_attribute]
-    # print(len(type_error))
     if element.startswith("TP"):
         estimate_array = pd.Series(np.ones_like(Y))[T.astype(str) == type_attribute]
         estimate_array = estimate_array[type_error == 0]
@@ -501,7 +498,7 @@ def eval_func_bound(element, Y, predicted_Y, T, delta, inequality, predict_bound
         return eval_t_test(estimate, std_dev, num_of_elements, delta)
     elif inequality == Inequality.HOEFFDING_INEQUALITY:
         if predict_bound:
-            return predict_hoeffding(estimate, safety_size, num_of_elements, delta)
+            return predict_hoeffding(estimate, safety_size, delta)
             #return predict_hoeffding_modified(estimate, safety_size, num_of_elements, delta)
         return eval_hoeffding(estimate, num_of_elements, delta)
     return None, None
@@ -529,8 +526,8 @@ def eval_hoeffding(estimate, num_of_elements, delta):
     int_size = math.sqrt(math.log(1/delta) / (2 * num_of_elements))
     return estimate - int_size, estimate + int_size
 
-def predict_hoeffding(estimate, num_of_elements, delta):
-    constant_term = math.sqrt(math.log(1/delta) / (2 * num_of_elements))
+def predict_hoeffding(estimate, safety_size, delta):
+    constant_term = math.sqrt(math.log(1/delta) / (2 * safety_size))
     int_size = 2 * constant_term
     return estimate - int_size, estimate + int_size
 
