@@ -5,8 +5,6 @@ import math
 from enum import Enum
 from scipy import stats
 # Author: Parul Gupta
-import logging
-logging.basicConfig(filename='main.py', level=logging.INFO)
 
 ####################
 # Construct Parser #

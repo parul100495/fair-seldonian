@@ -6,7 +6,6 @@ import math
 import pandas as pd
 import numpy as np
 
-
 # simple logistic regression classifier
 def predict(theta, x):
     # print(type(x), x.iloc[0])
@@ -38,7 +37,9 @@ def gHat1(theta, X, Y, T, delta, ineq, predict_bound, d2):
         predicted_Y[i] = predict(theta, X.iloc[i])
     rev_polish_notation = "TP(0) TP(1) - abs 0.2 TP(1) * -"
     r = construct_expr_tree(rev_polish_notation)
-    _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,
+    # print(type(Y), type(predicted_Y), type(T))
+    predicted_Y = pd.Series(predicted_Y)
+    l, u = eval_expr_tree_conf_interval(r, Y, predicted_Y, T, delta,
                                               ineq, predict_bound, d2)
     return u
 

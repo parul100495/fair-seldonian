@@ -3,7 +3,7 @@ from logistic_regression_functions import *
 from scipy.optimize import minimize
 
 import numpy as np
-
+import pandas as pd
 
 # Quasi-Seldonian algo
 def QSA(X, Y, T, gHats, deltas, ineq):
@@ -11,9 +11,9 @@ def QSA(X, Y, T, gHats, deltas, ineq):
     candidateData_X, safetyData_X, candidateData_Y, safetyData_Y = train_test_split(
         X, Y, test_size = 1 - candidateData_len, shuffle = False)
     candidateData_T, safetyData_T = np.split(T, [int(candidateData_len * T.size), ])
-    safetyData_X = safetyData_X.reset_index()
-    safetyData_T = safetyData_T.reset_index()
-    safetyData_Y = safetyData_Y.reset_index()
+    safetyData_X = safetyData_X.reset_index(drop=True)
+    safetyData_T = pd.Series(safetyData_T.reset_index(drop=True))
+    safetyData_Y = pd.Series(safetyData_Y.reset_index(drop=True))
     candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq, safetyData_X[1].count())
     print("candidate solution upperbound: ", gHat1(candidateSolution, candidateData_X, candidateData_Y, candidateData_T, deltas[0], ineq, False, None))
     if candidateSolution is not None:
