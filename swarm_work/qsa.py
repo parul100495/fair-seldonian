@@ -11,8 +11,10 @@ def QSA(X, Y, T, gHats, deltas, ineq):
     candidateData_X, safetyData_X, candidateData_Y, safetyData_Y = train_test_split(
         X, Y, test_size = 1 - candidateData_len, shuffle = False)
     candidateData_T, safetyData_T = np.split(T, [int(candidateData_len * T.size), ])
-
-    candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq, safetyData_X.shape[0])
+    safetyData_X = safetyData_X.reset_index()
+    safetyData_T = safetyData_T.reset_index()
+    safetyData_Y = safetyData_Y.reset_index()
+    candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, gHats, deltas, ineq, safetyData_X[1].count())
     print("candidate solution upperbound: ", gHat1(candidateSolution, candidateData_X, candidateData_Y, candidateData_T, deltas[0], ineq, False, None))
     if candidateSolution is not None:
         passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T, gHats, deltas, ineq)

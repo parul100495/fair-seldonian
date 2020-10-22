@@ -1,4 +1,3 @@
-from numba import jit
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss
 from equation_parser import *
@@ -9,10 +8,10 @@ import numpy as np
 
 
 # simple logistic regression classifier
-@jit(nopython=True)
 def predict(theta, x):
-    power_value = theta[5] + theta[0]*x[0] + theta[1]*x[1] + \
-                  theta[2]*x[2] + theta[3]*x[3] + theta[4]*x[4]
+    # print(type(x), x.iloc[0])
+    power_value = theta[5] + theta[0]*x.iloc[0] + theta[1]*x.iloc[1] + \
+                  theta[2]*x.iloc[2] + theta[3]*x.iloc[3] + theta[4]*x.iloc[4]
     denominator = 1 + math.exp(-power_value)
     prob_value = 1 / denominator
     if prob_value > 0.5:
@@ -22,20 +21,21 @@ def predict(theta, x):
 
 # Estimator of the primary objective - negative of the log loss
 def fHat(theta, X, Y):
-    n = X.shape[0]
+    n = X[1].count()
+    # print(type(n),n)
     predicted_Y = np.empty((n,))
     for i in range(n):
-        predicted_Y[i] = predict(theta, X[i])
+        predicted_Y[i] = predict(theta, X.iloc[i])
     res = log_loss(Y, predicted_Y)
     return -res
 
 
 # Fairness constraint - True positive rate difference less than 0.1
 def gHat1(theta, X, Y, T, delta, ineq, predict_bound, d2):
-    n = X.shape[0]
+    n = X[1].count()
     predicted_Y = np.empty((n,))
     for i in range(n):
-        predicted_Y[i] = predict(theta, X[i])
+        predicted_Y[i] = predict(theta, X.iloc[i])
     rev_polish_notation = "TP(0) TP(1) - abs 0.2 TP(1) * -"
     r = construct_expr_tree(rev_polish_notation)
     _, u = eval_expr_tree_conf_interval(r, pd.Series(Y), pd.Series(predicted_Y), pd.Series(T), delta,

@@ -8,7 +8,7 @@ import pandas as pd
 def get_data(N, features, t_ratio, tp0_ratio, tp1_ratio, random_seed):
     random_state = int(random_seed * 99) + 1
     seed(random_state)
-    T = np.random.default_rng(random_state).binomial(1, t_ratio, N)
+    T = np.random.default_rng(random_state).binomial(1, t_ratio, int(N))
     A = np.zeros(T.shape)
     Y = np.zeros(T.shape)
     X = np.zeros(T.shape)
@@ -32,7 +32,7 @@ def get_data(N, features, t_ratio, tp0_ratio, tp1_ratio, random_seed):
             k += 1
 
     T = pd.Series(T)
-    X1 = np.random.rand(N, features-2)
+    X1 = np.random.rand(int(N), features-2)
     # X = pd.DataFrame(X)
     X = pd.concat([pd.DataFrame(X), pd.DataFrame(X1), T], axis = 1)
     Y = pd.Series(Y)
