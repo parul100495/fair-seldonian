@@ -1,0 +1,36 @@
+2020-10-26 09:13:50,415	INFO services.py:1164 -- View the Ray dashboard at [1m[32mhttp://127.0.0.1:8265[39m[22m
+F1026 09:14:00.546906 42377 42377 raylet_client.cc:54] Could not connect to socket /tmp/ray/session_2020-10-26_09-13-49_844811_42377/sockets/raylet
+*** Check failure stack trace: ***
+    @     0x2aaac0beb6ed  google::LogMessage::Fail()
+    @     0x2aaac0bec84c  google::LogMessage::SendToLog()
+    @     0x2aaac0beb3c9  google::LogMessage::Flush()
+    @     0x2aaac0beb5e1  google::LogMessage::~LogMessage()
+    @     0x2aaac0ba2789  ray::RayLog::~RayLog()
+    @     0x2aaac08ca095  ray::raylet::RayletConnection::RayletConnection()
+    @     0x2aaac08cb3fe  ray::raylet::RayletClient::RayletClient()
+    @     0x2aaac0869a67  ray::CoreWorker::CoreWorker()
+    @     0x2aaac086dc14  ray::CoreWorkerProcess::CreateWorker()
+    @     0x2aaac086ee82  ray::CoreWorkerProcess::CoreWorkerProcess()
+    @     0x2aaac086f84b  ray::CoreWorkerProcess::Initialize()
+    @     0x2aaac07ad448  __pyx_pw_3ray_7_raylet_10CoreWorker_1__cinit__()
+    @     0x2aaac07aeba5  __pyx_tp_new_3ray_7_raylet_CoreWorker()
+    @     0x5555556916cd  _PyObject_MakeTpCall
+    @     0x555555718f56  _PyEval_EvalFrameDefault
+    @     0x5555556def9f  _PyEval_EvalCodeWithName
+    @     0x5555556df943  _PyFunction_Vectorcall.localalias.355
+    @     0x55555565411a  _PyEval_EvalFrameDefault.cold.2790
+    @     0x5555556def9f  _PyEval_EvalCodeWithName
+    @     0x5555556df943  _PyFunction_Vectorcall.localalias.355
+    @     0x55555565477f  _PyEval_EvalFrameDefault.cold.2790
+    @     0x5555556dea92  _PyEval_EvalCodeWithName
+    @     0x5555556df754  PyEval_EvalCodeEx
+    @     0x55555576dedc  PyEval_EvalCode
+    @     0x55555576df84  run_eval_code_obj
+    @     0x5555557a01f4  run_mod
+    @     0x5555556686e1  PyRun_FileExFlags
+    @     0x555555668ac6  PyRun_SimpleFileExFlags
+    @     0x55555566998b  Py_RunMain.cold.2916
+    @     0x5555557a2d19  Py_BytesMain
+    @     0x2aaaaaf0d555  __libc_start_main
+    @     0x555555732e93  (unknown)
+srun: error: swarm052: task 0: Aborted
