@@ -288,10 +288,13 @@ def eval_estimate(element, Y, predicted_Y, T):
     :return: estimate value: float
     """
     error = np.subtract(Y, predicted_Y)
+    # print("error: ", error)
+    # print("T: ", T)
     # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
     type_attribute = element[3:-1]
 
     type_Y = Y[T.astype(str) == type_attribute]
+
     # print(element)
     # for i in range(Y.size):
     #     print(Y[i], str(T[i]), type_attribute)
@@ -334,146 +337,152 @@ def eval_expr_tree_conf_interval(t_node, Y, predicted_Y, T, inequality, predict_
             if isFunc(t_node.value):
                 return eval_func_bound(t_node.value, Y, predicted_Y, T, t_node.delta, inequality, predict_bound, safety_size, modified_h)
             # number value
+            if t_node.left and t_node.right:
+                print(t_node.value, t_node.left.value, t_node.right.value)
             return float(t_node.value), float(t_node.value)
         elif l_y is None and u_y is None:
             # only one unary operator supported
-            if isMod(t_node.value):
-                return eval_math_bound(l_x, u_x, l_y, u_y, 'abs')
+            # if isMod(t_node.value):
+            #     bound = eval_math_bound(l_x, u_x, l_y, u_y, 'abs')
+            #     # print('abs: ', bound)
+            #     return bound
             return None, None
         else:
-            if t_node.value == '+':
-                return eval_math_bound(l_x, u_x, l_y, u_y, '+')
-            elif t_node.value == '-':
-                return eval_math_bound(l_x, u_x, l_y, u_y, '-')
+            # if t_node.value == '+':
+            #     return eval_math_bound(l_x, u_x, l_y, u_y, '+')
+            if t_node.value == '-':
+                bound = eval_math_bound(l_x, u_x, l_y, u_y, '-')
+                # print('sub: ', bound)
+                return bound
             elif t_node.value == '*':
                 return eval_math_bound(l_x, u_x, l_y, u_y, '*')
-            elif t_node.value == '^':
-                return eval_math_bound(l_x, u_x, l_y, u_y, '^')
-            elif t_node.value == '/':
-                return eval_math_bound(l_x, u_x, l_y, u_y, '/')
+            # elif t_node.value == '^':
+            #     return eval_math_bound(l_x, u_x, l_y, u_y, '^')
+            # elif t_node.value == '/':
+            #     return eval_math_bound(l_x, u_x, l_y, u_y, '/')
             elif isFunc(t_node.value):
                 return eval_func_bound(t_node.value, Y, predicted_Y, T, t_node.delta, inequality, predict_bound, safety_size, modified_h)
-            elif isMod(t_node.value):
-                return eval_math_bound(l_x, u_x, l_y, u_y, 'abs')
+            # elif isMod(t_node.value):
+            #     return eval_math_bound(l_x, u_x, l_y, u_y, 'abs')
             return None, None
     return None, None
 
 
 def eval_math_bound(l_x, u_x, l_y=None, u_y=None, operator=None):
-    if operator == '+':
-        return eval_add_bound(l_x, u_x, l_y, u_y)
-    elif operator == '-':
+    # if operator == '+':
+    #     return eval_add_bound(l_x, u_x, l_y, u_y)
+    if operator == '-':
         return eval_subtract_bound(l_x, u_x, l_y, u_y)
     elif operator == '*':
         return eval_multiply_bound(l_x, u_x, l_y, u_y)
-    elif operator == '^':
-        # power is not supported as of now
-        return l_x, u_x
-    elif operator == '/':
-        return eval_div_bound(l_x, u_x, l_y, u_y)
-    elif isMod(operator):
-        return eval_abs_bound(l_x, u_x)
+    # elif operator == '^':
+    #     # power is not supported as of now
+    #     return l_x, u_x
+    # elif operator == '/':
+    #     return eval_div_bound(l_x, u_x, l_y, u_y)
+    # elif isMod(operator):
+    #     return eval_abs_bound(l_x, u_x)
     return None, None
 
 
-def eval_abs_bound(l_x, u_x):
-    """
-    :param l_x: lower bound
-    :param u_x: upper bound
-    :return: lower and upper bound of abs operation
-    """
-    if l_x is not None and u_x is not None:
-        if l_x == math.inf or u_x == math.inf or l_x == -math.inf or u_x == math.inf:
-            return 0, math.inf
-        elif l_x <= 0 and u_x <= 0:
-            return -u_x, -l_x
-        elif l_x >= 0 and u_x >= 0:
-            return l_x, u_x
-        elif l_x <= 0 <= u_x:
-            return 0, max(-l_x, u_x)
-    return None, None
+# def eval_abs_bound(l_x, u_x):
+#     """
+#     :param l_x: lower bound
+#     :param u_x: upper bound
+#     :return: lower and upper bound of abs operation
+#     """
+#     if l_x is not None and u_x is not None:
+#         if l_x == math.inf or u_x == math.inf or l_x == -math.inf or u_x == math.inf:
+#             return 0, math.inf
+#         elif l_x <= 0 and u_x <= 0:
+#             return -u_x, -l_x
+#         elif l_x >= 0 and u_x >= 0:
+#             return l_x, u_x
+#         elif l_x <= 0 <= u_x:
+#             return 0, max(-l_x, u_x)
+#     return None, None
 
 
-def eval_div_bound(l_x, u_x, l_y, u_y):
-    """
-    :param l_x: lower bound of left child
-    :param u_x: upper bound of left child
-    :param l_y: lower bound of right child
-    :param u_y: upper bound of right child
-    :return: lower and upper bound of div operation
-    """
-    if l_x is not None and u_x is not None and l_y is not None and u_y is not None:
-        if (l_x == -math.inf and u_x == math.inf) or l_y <= 0 <= u_y:
-            # x is unbounded or 0 in y
-            return -math.inf, math.inf
-        elif l_x >= 0 and l_y >= 0:
-            # both x, y are positive
-            if u_y == math.inf:
-                lower = 0
-            else:
-                lower = l_x / u_y
-            if u_x == math.inf:
-                upper = math.inf
-            else:
-                upper = u_x / l_y
-            return lower, upper
-        elif u_x <= 0 and u_y <= 0:
-            # both x, y are negative
-            if l_y == -math.inf:
-                lower = 0
-            else:
-                lower = u_x / l_y
-
-            if l_x == -math.inf:
-                upper = math.inf
-            else:
-                upper = l_x / u_y
-            return lower, upper
-        elif l_x >= 0 >= u_y:
-            # x is positive and y is negative
-            if u_x == math.inf:
-                lower = -math.inf
-            else:
-                lower = l_x / u_y
-            if l_y == -math.inf:
-                upper = 0
-            else:
-                upper = l_x / l_y
-            return lower, upper
-        elif u_x <= 0 <= l_y:
-            # x is negative and y is positive
-            if l_x == -math.inf:
-                lower = -math.inf
-            else:
-                lower = l_x / l_y
-            if u_y == math.inf:
-                upper = 0
-            else:
-                upper = u_x / u_y
-            return lower, upper
-        elif l_x <= 0 <= u_x and l_y >= 0:
-            # 0 in x and y is positive
-            if l_x == -math.inf:
-                lower = -math.inf
-            else:
-                lower = l_x / l_y
-            if u_x == math.inf:
-                upper = math.inf
-            else:
-                upper = u_x / l_y
-            return lower, upper
-        elif l_x <= 0 <= u_x and u_y <= 0:
-            # 0 in x and y is negative
-            if u_x == math.inf:
-                lower = -math.inf
-            else:
-                lower = u_x / u_y
-            if l_x == -math.inf:
-                upper = math.inf
-            else:
-                upper = l_x / u_y
-            return lower, upper
-    return None, None
+# def eval_div_bound(l_x, u_x, l_y, u_y):
+#     """
+#     :param l_x: lower bound of left child
+#     :param u_x: upper bound of left child
+#     :param l_y: lower bound of right child
+#     :param u_y: upper bound of right child
+#     :return: lower and upper bound of div operation
+#     """
+#     if l_x is not None and u_x is not None and l_y is not None and u_y is not None:
+#         if (l_x == -math.inf and u_x == math.inf) or l_y <= 0 <= u_y:
+#             # x is unbounded or 0 in y
+#             return -math.inf, math.inf
+#         elif l_x >= 0 and l_y >= 0:
+#             # both x, y are positive
+#             if u_y == math.inf:
+#                 lower = 0
+#             else:
+#                 lower = l_x / u_y
+#             if u_x == math.inf:
+#                 upper = math.inf
+#             else:
+#                 upper = u_x / l_y
+#             return lower, upper
+#         elif u_x <= 0 and u_y <= 0:
+#             # both x, y are negative
+#             if l_y == -math.inf:
+#                 lower = 0
+#             else:
+#                 lower = u_x / l_y
+#
+#             if l_x == -math.inf:
+#                 upper = math.inf
+#             else:
+#                 upper = l_x / u_y
+#             return lower, upper
+#         elif l_x >= 0 >= u_y:
+#             # x is positive and y is negative
+#             if u_x == math.inf:
+#                 lower = -math.inf
+#             else:
+#                 lower = l_x / u_y
+#             if l_y == -math.inf:
+#                 upper = 0
+#             else:
+#                 upper = l_x / l_y
+#             return lower, upper
+#         elif u_x <= 0 <= l_y:
+#             # x is negative and y is positive
+#             if l_x == -math.inf:
+#                 lower = -math.inf
+#             else:
+#                 lower = l_x / l_y
+#             if u_y == math.inf:
+#                 upper = 0
+#             else:
+#                 upper = u_x / u_y
+#             return lower, upper
+#         elif l_x <= 0 <= u_x and l_y >= 0:
+#             # 0 in x and y is positive
+#             if l_x == -math.inf:
+#                 lower = -math.inf
+#             else:
+#                 lower = l_x / l_y
+#             if u_x == math.inf:
+#                 upper = math.inf
+#             else:
+#                 upper = u_x / l_y
+#             return lower, upper
+#         elif l_x <= 0 <= u_x and u_y <= 0:
+#             # 0 in x and y is negative
+#             if u_x == math.inf:
+#                 lower = -math.inf
+#             else:
+#                 lower = u_x / u_y
+#             if l_x == -math.inf:
+#                 upper = math.inf
+#             else:
+#                 upper = l_x / u_y
+#             return lower, upper
+#     return None, None
 
 
 def eval_multiply_bound(l_x, u_x, l_y, u_y):
@@ -586,72 +595,65 @@ def eval_subtract_bound(l_x, u_x, l_y, u_y):
     return None, None
 
 
-def eval_add_bound(l_x, u_x, l_y, u_y):
-    """
-    :param l_x: lower bound of left child
-    :param u_x: upper bound of left child
-    :param l_y: lower bound of right child
-    :param u_y: upper bound of right child
-    :return: lower and upper bound of add operation
-    """
-    if l_x is not None and u_x is not None and l_y is not None and u_y is not None:
-        # lower bound
-        if l_x == -math.inf or l_y == -math.inf:
-            lower = -math.inf
-        else:
-            lower = l_x + l_y
-
-        # upper bound
-        if u_x == math.inf or u_y == math.inf:
-            upper = math.inf
-        else:
-            upper = u_x + u_y
-        return lower, upper
-    return None, None
+# def eval_add_bound(l_x, u_x, l_y, u_y):
+#     """
+#     :param l_x: lower bound of left child
+#     :param u_x: upper bound of left child
+#     :param l_y: lower bound of right child
+#     :param u_y: upper bound of right child
+#     :return: lower and upper bound of add operation
+#     """
+#     if l_x is not None and u_x is not None and l_y is not None and u_y is not None:
+#         # lower bound
+#         if l_x == -math.inf or l_y == -math.inf:
+#             lower = -math.inf
+#         else:
+#             lower = l_x + l_y
+#
+#         # upper bound
+#         if u_x == math.inf or u_y == math.inf:
+#             upper = math.inf
+#         else:
+#             upper = u_x + u_y
+#         return lower, upper
+#     return None, None
 
 
 def eval_func_bound(element, Y, predicted_Y, T, delta, inequality, predict_bound, safety_size, modified_h):
     estimate = eval_estimate(element, Y, predicted_Y, T)
     num_of_elements = len(Y)
-    if inequality == Inequality.T_TEST:
-        variance = get_variance(element, estimate, predicted_Y, T, num_of_elements)
-        if predict_bound:
-            return predict_t_test(estimate, variance, safety_size, delta)
-        return eval_t_test(estimate, variance, num_of_elements, delta)
-    elif inequality == Inequality.HOEFFDING_INEQUALITY:
-        if predict_bound:
-            if modified_h:
-                return predict_hoeffding_modified(estimate, num_of_elements, safety_size, delta)
-            return predict_hoeffding(estimate, safety_size, delta)
-        return eval_hoeffding(estimate, num_of_elements, delta)
-    return None, None
+    # if inequality == Inequality.T_TEST:
+    #     variance = get_variance(element, estimate, predicted_Y, T, num_of_elements)
+    #     if predict_bound:
+    #         return predict_t_test(estimate, variance, safety_size, delta)
+    #     return eval_t_test(estimate, variance, num_of_elements, delta)
+    # elif inequality == Inequality.HOEFFDING_INEQUALITY:
+    if predict_bound:
+        if modified_h:
+            return predict_hoeffding_modified(estimate, num_of_elements, safety_size, delta)
+        return predict_hoeffding(estimate, safety_size, delta)
+    return eval_hoeffding(estimate, num_of_elements, delta)
+    # return None, None
 
 
-def get_variance(element, estimate, predicted_Y, T, num_of_elements):
-    # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
-    type_attribute = element[3:-1]
-    type_Y = predicted_Y[T.astype(str) == type_attribute]
-    sum_term = (type_Y - estimate)**2
-    return math.sqrt(np.sum(sum_term) / (num_of_elements - 1))
+# def get_variance(element, estimate, predicted_Y, T, num_of_elements):
+#     # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
+#     type_attribute = element[3:-1]
+#     type_Y = predicted_Y[T.astype(str) == type_attribute]
+#     sum_term = (type_Y - estimate)**2
+#     return math.sqrt(np.sum(sum_term) / (num_of_elements - 1))
 
 
-def get_num_of_elements(element, Y, T):
-    # element will be of the form FP(A) or FN(A) or TP(A) or TN(A)
-    type_attribute = element[3:-1]
-    type_Y = Y[T.astype(str) == type_attribute]
-    return len(type_Y)
-
-
-def eval_t_test(estimate, variance, num_of_elements, delta):
-    t = stats.t.ppf(1 - delta, num_of_elements - 1)
-    int_size = (variance / math.sqrt(num_of_elements)) * t
-    return estimate - int_size, estimate + int_size
-
-
-def predict_t_test(estimate, variance, safety_size, delta):
-    t = stats.t.ppf(1 - delta, safety_size - 1)
-    int_size = 2 * (variance / math.sqrt(safety_size)) * t
-    return estimate - int_size, estimate + int_size
+# def eval_t_test(estimate, variance, num_of_elements, delta):
+#     t = stats.t.ppf(1 - delta, num_of_elements - 1)
+#     int_size = (variance / math.sqrt(num_of_elements)) * t
+#     return estimate - int_size, estimate + int_size
+#
+#
+# def predict_t_test(estimate, variance, safety_size, delta):
+#     t = stats.t.ppf(1 - delta, safety_size - 1)
+#     int_size = 2 * (variance / math.sqrt(safety_size)) * t
+#     return estimate - int_size, estimate + int_size
 
 
 def eval_hoeffding(estimate, num_of_elements, delta):
@@ -674,16 +676,16 @@ def predict_hoeffding_modified(estimate, num_of_elements, safety_size, delta):
 ##############
 # Print Tree #
 ##############
-def inorder(t_node):
-    """
-    A utility function to do inorder traversal
-    :param t_node: expr_tree node
-    :return: None
-    """
-    if t_node is not None:
-        inorder(t_node.left)
-        print(t_node.value, t_node.delta)
-        inorder(t_node.right)
+# def inorder(t_node):
+#     """
+#     A utility function to do inorder traversal
+#     :param t_node: expr_tree node
+#     :return: None
+#     """
+#     if t_node is not None:
+#         inorder(t_node.left)
+#         print(t_node.value, t_node.delta)
+#         inorder(t_node.right)
 
 
 

@@ -42,7 +42,7 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
             base_seed = (experiment_number * numTrials) + 1
             random_state = base_seed + trial
             # Test data
-            testX, testY, testT = get_data(mTest * N, 5, 0.5, 0.5, 0.7, trial + mIndex + experiment_number - 1)
+            # testX, testY, testT = get_data(mTest * N, 5, 0.5, 0.5, 0.7, trial + mIndex + experiment_number - 1)
             # Train data
             trainX, trainY, trainT = get_data(m * N, 5, 0.5, 0.5, 0.7, random_state)
 
@@ -50,12 +50,12 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
             theta = simple_logistic(trainX, trainY)  # Run least squares linear regression
             if theta is not None:
                 LS_solutions_found[trial, mIndex] = 1
-                trueLogLoss = -fHat(theta, testX, testY)
-                upper_bound = eval_ghat_base(theta, testX, testY, testT)
+                trueLogLoss = -fHat(theta, trainX, trainY)
+                upper_bound = eval_ghat_base(theta, trainX, trainY, trainT)
                 if upper_bound > 0:
-                    LS_failures_g1[trial, mIndex] = False
+                    LS_failures_g1[trial, mIndex] = 1
                 else:
-                    LS_failures_g1[trial, mIndex] = True
+                    LS_failures_g1[trial, mIndex] = 0
                 LS_upper_bound[trial, mIndex] = upper_bound
                 LS_fs[trial, mIndex] = -trueLogLoss
                 print(
@@ -68,12 +68,12 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
             (result, passedSafetyTest) = QSA_Base(trainX, trainY, trainT)
             if passedSafetyTest:
                 sbase_solutions_found[trial, mIndex] = 1
-                trueLogLoss = -fHat(result, testX, testY)
-                upper_bound = eval_ghat_base(result, testX, testY, testT)
+                trueLogLoss = -fHat(result, trainX, trainY)
+                upper_bound = eval_ghat_base(result, trainX, trainY, trainT)
                 if upper_bound > 0:
-                    sbase_failures_g1[trial, mIndex] = False
+                    sbase_failures_g1[trial, mIndex] = 1
                 else:
-                    sbase_failures_g1[trial, mIndex] = True
+                    sbase_failures_g1[trial, mIndex] = 0
                 sbase_upper_bound[trial, mIndex] = upper_bound
                 sbase_fs[trial, mIndex] = -trueLogLoss
                 print(
@@ -103,10 +103,10 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
 
 if __name__ == "__main__":
     print("Assuming the default: 30")
-    nWorkers = 30
+    nWorkers = 2
     print(f"Running experiments on {nWorkers} threads")
-    N = 40000
-    ms = np.linspace(0.2, 1, num=12)  # 30 fractions
+    N = 200
+    ms = np.linspace(0.5, 1, num=3)  # 30 fractions
     numM = len(ms)
     numTrials = 1  # 24 * 5 = 120 samples per fraction
     mTest = 0.2  # about 0.2 * 10000 test samples = fraction of total data

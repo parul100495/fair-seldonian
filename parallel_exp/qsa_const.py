@@ -7,15 +7,14 @@ import pandas as pd
 
 # QSA const
 def QSA_Const(X, Y, T):
-    candidateData_len = 0.40
+    candidateData_len = 0.50
     candidateData_X, safetyData_X, candidateData_Y, safetyData_Y = train_test_split(
         X, Y, test_size = 1 - candidateData_len, shuffle = False)
     candidateData_T, safetyData_T = np.split(T, [int(candidateData_len * T.size), ])
     safetyData_X = safetyData_X.reset_index(drop=True)
     safetyData_T = pd.Series(safetyData_T.reset_index(drop=True))
     safetyData_Y = pd.Series(safetyData_Y.reset_index(drop=True))
-
-    candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, safetyData_X[1].count())
+    candidateSolution = getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, len(safetyData_Y))
     print("Actual candidate sol upperbound: ", eval_ghat_const(candidateSolution, candidateData_X, candidateData_Y, candidateData_T))
     if candidateSolution is not None:
         passedSafety = safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T)
@@ -34,7 +33,7 @@ def safetyTest(candidateSolution, safetyData_X, safetyData_Y, safetyData_T):
 
 def candidateObjective(thetaToEvaluate, candidateData_X, candidateData_Y, candidateData_T, safety_size):
     result = fHat(thetaToEvaluate, candidateData_X, candidateData_Y)
-    upperBound = ghat_const(thetaToEvaluate, candidateData_X, candidateData_Y, candidateData_T, True, safety_size)
+    upperBound = predict_ghat_const(thetaToEvaluate, candidateData_X, candidateData_Y, candidateData_T, True, safety_size)
     if upperBound > 0.0:
         result = -10000.0 - upperBound
     return -result
@@ -45,7 +44,7 @@ def getCandidateSolution(candidateData_X, candidateData_Y, candidateData_T, safe
     print("Initial LS upperbound: ", eval_ghat_const(initialSolution, candidateData_X, candidateData_Y, candidateData_T))
     if initialSolution is not None:
         res = minimize(candidateObjective, x0 = initialSolution, method = 'Powell',
-                     options = {'disp': False, 'maxiter': 10000},
+                     options = {'disp': False, 'maxiter': 5000},
                      args = (candidateData_X, candidateData_Y, candidateData_T, safety_size))
         return res.x
     else:

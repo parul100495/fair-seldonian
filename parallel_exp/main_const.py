@@ -3,6 +3,7 @@ import numpy as np
 import ray
 import logging
 logging.basicConfig(filename='main.py', level=logging.INFO)
+ray.shutdown()
 ray.init()
 from synthetic_data import *
 from qsa_base import *
@@ -42,24 +43,29 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
             base_seed = (experiment_number * numTrials) + 1
             random_state = base_seed + trial
             # Test data
-            testX, testY, testT = get_data(mTest * N, 5, 0.5, 0.5, 0.7, trial + mIndex + experiment_number - 1)
+            testX, testY, testT = get_data(mTest * N, 5, 0.5, 0.4, 0.6, trial + mIndex + experiment_number - 1)
             # Train data
-            trainX, trainY, trainT = get_data(m * N, 5, 0.5, 0.5, 0.7, random_state)
+            trainX, trainY, trainT = get_data(m * N, 3, 0.5, 0.4, 0.6, random_state)
+            print("Frac to Type 1: ", trainT[trainT.astype(str) == "1"].shape[0] / trainT.shape[0])
+            male_y = trainY[trainT.astype(str) == "1"]
+            print("Frac to label 1 of type 1: ", male_y[male_y.astype(str) == "1.0"].shape[0] / male_y.shape[0])
+            female_y = trainY[trainT.astype(str) == "0"]
+            print("Frac to label 1 of type 0: ", female_y[female_y.astype(str) == "1.0"].shape[0] / female_y.shape[0])
 
             # Run the logistic regression algorithm
             theta = simple_logistic(trainX, trainY)  # Run least squares linear regression
             if theta is not None:
                 LS_solutions_found[trial, mIndex] = 1
                 trueLogLoss = -fHat(theta, testX, testY)
-                upper_bound = eval_ghat_base(theta, testX, testY, testT)
+                upper_bound = eval_ghat_const(theta, testX, testY, testT)
                 if upper_bound > 0:
-                    LS_failures_g1[trial, mIndex] = False
+                    LS_failures_g1[trial, mIndex] = 1
                 else:
-                    LS_failures_g1[trial, mIndex] = True
+                    LS_failures_g1[trial, mIndex] = 0
                 LS_upper_bound[trial, mIndex] = upper_bound
                 LS_fs[trial, mIndex] = -trueLogLoss
                 print(
-                    f"[(worker {worker_id}/{nWorkers}) simple_logistic   trial {trial + 1}/{numTrials}, m {m}]"
+                    f"[(worker {worker_id}/{nWorkers}) simple_logistic   trial {trial + 1}/{numTrials}, frac: {m}]"
                     f"LS fHat over test data: {trueLogLoss:.10f}, upper bound: {upper_bound:.10f}")
             else:
                 raise Exception("Dirty data. Raising exception.")
@@ -71,9 +77,9 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
                 trueLogLoss = -fHat(result, testX, testY)
                 upper_bound = eval_ghat_const(result, testX, testY, testT)
                 if upper_bound > 0:
-                    sconst_failures_g1[trial, mIndex] = False
+                    sconst_failures_g1[trial, mIndex] = 1
                 else:
-                    sconst_failures_g1[trial, mIndex] = True
+                    sconst_failures_g1[trial, mIndex] = 0
                 sconst_upper_bound[trial, mIndex] = upper_bound
                 sconst_fs[trial, mIndex] = -trueLogLoss
                 print(
@@ -103,10 +109,10 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N):
 
 if __name__ == "__main__":
     print("Assuming the default: 30")
-    nWorkers = 30
+    nWorkers = 4
     print(f"Running experiments on {nWorkers} threads")
-    N = 40000
-    ms = np.linspace(0.2, 1, num=12)
+    N = 20000
+    ms = np.linspace(0.5, 1, num=4)
     numM = len(ms)
     numTrials = 1  # 24 * 5 = 120 samples per fraction
     mTest = 0.2  # about 0.2 * 10000 test samples = fraction of total data

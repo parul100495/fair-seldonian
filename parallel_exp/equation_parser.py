@@ -521,6 +521,7 @@ def predict_t_test(estimate, std_dev, safety_size, delta):
     return estimate - int_size, estimate + int_size
 
 def eval_hoeffding(estimate, num_of_elements, delta):
+    print(estimate, num_of_elements, delta)
     int_size = math.sqrt(math.log(1/delta) / (2 * num_of_elements))
     return estimate - int_size, estimate + int_size
 
