@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from gather_results import gather_results
 import numpy as np
 
-csv_path = 'experiment_results/csv/'
-img_path = 'images/'
+csv_path = 'exp/exp_base/csv/'
+img_path = 'exp/exp_base/images/'
 
 
 def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc):
@@ -13,13 +13,13 @@ def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc)
     fig = plt.figure()
 
     plt.xlim(min(file_ms), max(file_ms))
-    plt.xlabel( "Amount of data (m)", fontsize = 16 )
-    #plt.xscale( 'log' )
+    plt.xlabel( "Amount of data", fontsize = 16 )
+    plt.xscale( 'log' )
     plt.xticks( fontsize = 12 )
     plt.ylabel( ylabel, fontsize = 16 )
 
     if is_yAxis_prob:
-        plt.ylim ( -0.1, 1.1 )
+        plt.ylim(-0.1, 1.1)
     # else:
     # plt.ylim(-0.2, 2.2)
     # plt.plot([1, 100000], [1.25, 1.25], ':k');

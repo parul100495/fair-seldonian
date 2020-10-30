@@ -3,8 +3,8 @@ import csv
 import glob
 import re
 
-bin_path = 'hextend/experiment_results/bin/'
-csv_path = 'hextend/experiment_results/csv/'
+bin_path = 'exp/exp_base/bin/'
+csv_path = 'exp/exp_base/csv/'
 
 
 def get_existing_experiment_numbers():
@@ -24,10 +24,10 @@ def addMoreResults(newFileId, ms, seldonian_solutions_found, seldonian_fs, seldo
     newFile = np.load(genFilename(newFileId))
     new_ms = newFile['ms']
 
-    new_seldonian_solutions_found = newFile['seldonian_solutions_found']
-    new_seldonian_fs = newFile['seldonian_fs']
-    new_seldonian_failures_g1 = newFile['seldonian_failures_g1']
-    new_seldonian_upper_bound = newFile['seldonian_upper_bound']
+    new_seldonian_solutions_found = newFile['s_solutions_found']
+    new_seldonian_fs = newFile['s_fs']
+    new_seldonian_failures_g1 = newFile['s_failures_g1']
+    new_seldonian_upper_bound = newFile['s_upper_bound']
 
     new_LS_solutions_found = newFile['LS_solutions_found']
     new_LS_fs = newFile['LS_fs']

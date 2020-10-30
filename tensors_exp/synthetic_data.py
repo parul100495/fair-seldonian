@@ -1,6 +1,6 @@
 from random import random, seed
 from sklearn.model_selection import train_test_split
-
+import time
 import numpy as np
 import pandas as pd
 
@@ -33,29 +33,25 @@ def get_data(N, features, t_ratio, tp0_ratio, tp1_ratio, random_seed):
 
     T = pd.Series(T)
     X1 = np.random.rand(int(N), features-2)
-    # X = pd.DataFrame(X)
     X = pd.concat([pd.DataFrame(X), pd.DataFrame(X1), T], axis = 1)
     Y = pd.Series(Y)
-    # All = pd.concat([X, Y, T], axis = 1)
-    return X, Y, T
+    return pd.concat([X, Y, T], axis = 1)
 
 
-# Generate numPoints data points
-# def generateData(frac, All, random_state, mTest):
-#     all_train, all_test, y_train, y_test = train_test_split(All, All.iloc[:, -1], test_size=mTest, random_state=42)
-#     # test dataset
-#     test_tmp = all_test.iloc[:, :-1]
-#     T_test = all_test.iloc[:, -1]
-#     X_test = test_tmp.iloc[:, :-1]
-#     Y_test = test_tmp.iloc[:, -1]
-#
-#     # train dataset
-#     subsampling = all_train.sample(frac=frac, random_state=random_state)
-#     subsampling = subsampling.reset_index()
-#     subsampling = subsampling.drop(columns=['index'])
-#     tmp = subsampling.iloc[:, :-1]
-#     T = subsampling.iloc[:, -1]
-#     X = tmp.iloc[:, :-1]
-#     Y = tmp.iloc[:, -1]
-#     return np.array(X_test), np.array(Y_test), np.array(T_test), np.array(X), np.array(Y), np.array(T)
+# split data points
+def data_split(frac, All, random_state, mTest):
+    # We know that All = X, Y, T
+    all_train, all_test, Y_train, Y_test = train_test_split(All, All.iloc[:, -2], test_size=mTest, random_state=42)
+    # test dataset
+    T_test = all_test.iloc[:, -1]
+    X_test = all_test.iloc[:, :-2]
+
+    # train
+    subsampling = all_train.sample(frac=frac, random_state=random_state)
+    subsampling = subsampling.reset_index()
+    subsampling = subsampling.drop(columns=['index'])
+    T = subsampling.iloc[:, -1]
+    X = subsampling.iloc[:, :-2]
+    Y = subsampling.iloc[:, -2]
+    return np.array(X_test), np.array(Y_test), np.array(T_test), np.array(X), np.array(Y), np.array(T)
 
