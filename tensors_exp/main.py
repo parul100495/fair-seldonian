@@ -3,7 +3,7 @@ import numpy as np
 import ray
 import logging
 logging.basicConfig( filename= 'main.py', level=logging.INFO )
-ray.shutdown()
+#ray.shutdown()
 ray.init()
 from synthetic_data import *
 from qsa import *
@@ -11,7 +11,7 @@ from logistic_regression_functions import *
 import time
 # Folder where the experiment results will be saved
 bin_path = 'exp/exp_{}/bin/'
-
+import sys
 
 def store_result(theta, theta1, testX, testY, testT, passedSafetyTest,
                  worker_id, nWorkers, m, trial, numTrials, seldonian_type, ls_dumb):
@@ -35,7 +35,7 @@ def store_result(theta, theta1, testX, testY, testT, passedSafetyTest,
         failures_g1 = 0
         if upper_bound > 0:
             failures_g1 = 1
-        print(f"[(worker {worker_id}/{nWorkers}) {seldonian_type}   trial {trial + 1}/{numTrials}, m {m}]"
+        print(f"[(worker {worker_id}/{nWorkers}) {ls_dumb}   trial {trial + 1}/{numTrials}, m {m}]"
               f"{ls_dumb} fHat over test data: {trueLogLoss:.10f}, upper bound: {upper_bound:.10f}")
         return 1, failures_g1, upper_bound, -trueLogLoss
     elif passedSafetyTest:
@@ -135,25 +135,24 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
         dumb_failures_g1 = dumb_failures_g1,
         dumb_upper_bound = dumb_upper_bound)
     print(f"Saved the file {outputFile}")
-    time.sleep(2)
 
 
 if __name__ == "__main__":
     print("Assuming the default: 50")
-    nWorkers = 2
+    nWorkers = 50
     print(f"Running experiments on {nWorkers} threads")
     N = 1000000
-    ms = np.logspace(-4, 0, num=5)  # 30 fractions
+    ms = np.logspace(-4, 0, num=30)  # 30 fractions
     print("N {}, frac array: {}".format(N, ms))
-    print("Running for: base")
+    print("Running for: {}".format(sys.argv))
     numM = len(ms)
-    numTrials = 1  # 3 * 100 = 300 samples per fraction
+    numTrials = 2  # 2 * 50 = 100 samples per fraction
     mTest = 0.2  # about 0.2 * 1,000,000 test samples = fraction of total data
     print("Number of trials: ", numTrials)
     # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file
     tic = timeit.default_timer()
     _ = ray.get(
-        [run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest, N, "opt") for worker_id in
+        [run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest, N, sys.argv[1]) for worker_id in
           range(1, nWorkers + 1)])
     toc = timeit.default_timer()
     time_parallel = toc - tic  # Elapsed time in seconds

@@ -3,8 +3,8 @@ import csv
 import glob
 import re
 
-bin_path = 'exp/exp_base/bin/'
-csv_path = 'exp/exp_base/csv/'
+bin_path = 'exp/lag_exp/bin/'
+csv_path = 'exp/lag_exp/csv/'
 
 
 def get_existing_experiment_numbers():

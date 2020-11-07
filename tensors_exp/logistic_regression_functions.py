@@ -7,7 +7,7 @@ import torch
 
 delta = 0.05
 ineq = Inequality.HOEFFDING_INEQUALITY
-rev_polish_notation = "TP(1) TP(0) - abs 0.2 TP(1) * -"
+rev_polish_notation = "TP(1) TP(0) - abs 0.25 TP(1) * -"
 candidate_ratio = 0.40
 
 

@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from gather_results import gather_results
 import numpy as np
 
-csv_path = 'exp/exp_base/csv/'
-img_path = 'exp/exp_base/images/'
+csv_path = 'exp/lag_exp/csv/'
+img_path = 'exp/lag_exp/images/'
 
 
 def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc):
