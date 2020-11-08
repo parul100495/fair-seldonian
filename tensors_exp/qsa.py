@@ -7,13 +7,13 @@ candidate_ratio = 0.40
 
 
 # QSA
-def QSA(X, Y, T, seldonian_type):
+def QSA(X, Y, T, seldonian_type, init_sol, init_sol1):
     cand_data_X, safe_data_X, cand_data_Y, safe_data_Y = train_test_split(X, Y,
                                                                           test_size = 1 - candidate_ratio,
                                                                           shuffle = False)
     cand_data_T, safe_data_T = np.split(T, [int(candidate_ratio * T.size),])
 
-    theta, theta1 = get_cand_solution2(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type)
+    theta, theta1 = get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type, init_sol, init_sol1)
     print("Actual cand sol upperbound: ", eval_ghat(theta, theta1,
                                                     cand_data_X, cand_data_Y, cand_data_T,
                                                     seldonian_type))
@@ -29,8 +29,9 @@ def safety_test(theta, theta1, safe_data_X, safe_data_Y, safe_data_T, seldonian_
     return True
 
 
-def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type):
-    init_sol, init_sol1 = simple_logistic(cand_data_X, cand_data_Y)
+def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type, init_sol, init_sol1):
+    if init_sol is None:
+        init_sol, init_sol1 = simple_logistic(cand_data_X, cand_data_Y)
     print("Initial LS upperbound: ", eval_ghat(init_sol, init_sol1,
                                                cand_data_X, cand_data_Y, cand_data_T,
                                                seldonian_type))

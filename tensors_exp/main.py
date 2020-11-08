@@ -84,6 +84,7 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
     # Create data
     base_seed = (experiment_number * 99) + 1
     All = get_data(N, 5, 0.4, 0.4, 0.6, base_seed)
+    init_sol, init_sol1 = None, None
 
     # Generate the data used to evaluate the primary objective and failure rates
     for trial in range(numTrials):
@@ -103,21 +104,23 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
                                                                     m, trial, numTrials, seldonian_type, "LS")
 
             # dumb classifier
-            dumb_solutions_found[trial, mIndex] , dumb_failures_g1[trial, mIndex], dumb_upper_bound[
-                trial, mIndex], dumb_fs[trial, mIndex] = store_result(theta, theta1,
-                                                                      testX, testY, testT,
-                                                                      True, worker_id, nWorkers,
-                                                                      m, trial, numTrials, seldonian_type,
-                                                                      "dumb")
+            # dumb_solutions_found[trial, mIndex] , dumb_failures_g1[trial, mIndex], dumb_upper_bound[
+            #     trial, mIndex], dumb_fs[trial, mIndex] = store_result(theta, theta1,
+            #                                                           testX, testY, testT,
+            #                                                           True, worker_id, nWorkers,
+            #                                                           m, trial, numTrials, seldonian_type,
+            #                                                           "dumb")
 
             # Run QSA
-            (theta, theta1, passedSafetyTest) = QSA(trainX, trainY, trainT, seldonian_type)
+            (theta, theta1, passedSafetyTest) = QSA(trainX, trainY, trainT, seldonian_type, init_sol, init_sol1)
             s_solutions_found[trial, mIndex], s_failures_g1[trial, mIndex], s_upper_bound[
                 trial, mIndex], s_fs[trial, mIndex] = store_result(theta, theta1,
                                                                    testX, testY, testT,
                                                                    passedSafetyTest, worker_id, nWorkers,
                                                                    m, trial, numTrials, seldonian_type,
                                                                    None)
+            if s_solutions_found[trial, mIndex] == 1:
+                init_sol, init_sol1 = theta, theta1
 
     np.savez(outputFile, ms = ms,
         s_solutions_found = s_solutions_found,
@@ -130,19 +133,20 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
         LS_failures_g1 = LS_failures_g1,
         LS_upper_bound = LS_upper_bound,
 
-        dumb_solutions_found = dumb_solutions_found,
-        dumb_fs = dumb_fs,
-        dumb_failures_g1 = dumb_failures_g1,
-        dumb_upper_bound = dumb_upper_bound)
+        # dumb_solutions_found = dumb_solutions_found,
+        # dumb_fs = dumb_fs,
+        # dumb_failures_g1 = dumb_failures_g1,
+        # dumb_upper_bound = dumb_upper_bound
+        )
     print(f"Saved the file {outputFile}")
 
 
 if __name__ == "__main__":
     print("Assuming the default: 50")
-    nWorkers = 50
+    nWorkers = 2
     print(f"Running experiments on {nWorkers} threads")
-    N = 1000000
-    ms = np.logspace(-4, 0, num=30)  # 30 fractions
+    N = 10000
+    ms = np.logspace(-2, 0, num=3)  # 30 fractions
     print("N {}, frac array: {}".format(N, ms))
     print("Running for: {}".format(sys.argv))
     numM = len(ms)
@@ -152,7 +156,7 @@ if __name__ == "__main__":
     # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file
     tic = timeit.default_timer()
     _ = ray.get(
-        [run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest, N, sys.argv[1]) for worker_id in
+        [run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest, N, "base") for worker_id in
           range(1, nWorkers + 1)])
     toc = timeit.default_timer()
     time_parallel = toc - tic  # Elapsed time in seconds
