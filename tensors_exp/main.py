@@ -1,5 +1,6 @@
 import timeit
 import numpy as np
+import pandas as pd
 import ray
 import logging
 logging.basicConfig( filename= 'main.py', level=logging.INFO )
@@ -70,12 +71,6 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
     LS_upper_bound = np.zeros((numTrials, numM))
     LS_fs = np.zeros((numTrials, numM))
 
-    # Results of the dumb classifier runs
-    dumb_solutions_found = np.zeros((numTrials, numM))
-    dumb_failures_g1 = np.zeros((numTrials, numM))
-    dumb_upper_bound = np.zeros((numTrials, numM))
-    dumb_fs = np.zeros((numTrials, numM))
-
     # Prepares file where experiment results will be saved
     experiment_number = worker_id
     outputFile = bin_path.format(seldonian_type) + 'results%d.npz' % experiment_number
@@ -85,6 +80,8 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
     base_seed = (experiment_number * 99) + 1
     All = get_data(N, 5, 0.4, 0.4, 0.6, base_seed)
     init_sol, init_sol1 = None, None
+    trainX, old_train = None, None
+    testX, testY, testT, All_train = get_test_data(All, mTest)
 
     # Generate the data used to evaluate the primary objective and failure rates
     for trial in range(numTrials):
@@ -93,8 +90,12 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
             base_seed = (experiment_number * numTrials) + 1
             random_state = base_seed + trial
             # these are numpy arrays
-            testX, testY, testT, trainX, trainY, trainT = data_split(m, All, random_state, mTest)
-
+            if trainX is not None:
+                trainY = trainY.reshape(trainY.shape[0], 1)
+                trainT = trainT.reshape(trainT.shape[0], 1)
+                old_train = np.concatenate((trainX, trainY, trainT), axis = 1)
+            trainX, trainY, trainT, All_train = data_split(m, All_train, random_state, N, pd.DataFrame(old_train))
+            # print(trainX.shape, trainY.shape, trainT.shape)
             # Run the logistic regression algorithm- theta, theta1 are tensors
             theta, theta1 = simple_logistic(trainX, trainY)
             LS_solutions_found[trial, mIndex], LS_failures_g1[trial, mIndex], LS_upper_bound[
@@ -102,14 +103,6 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
                                                                     testX, testY, testT,
                                                                     True, worker_id, nWorkers,
                                                                     m, trial, numTrials, seldonian_type, "LS")
-
-            # dumb classifier
-            # dumb_solutions_found[trial, mIndex] , dumb_failures_g1[trial, mIndex], dumb_upper_bound[
-            #     trial, mIndex], dumb_fs[trial, mIndex] = store_result(theta, theta1,
-            #                                                           testX, testY, testT,
-            #                                                           True, worker_id, nWorkers,
-            #                                                           m, trial, numTrials, seldonian_type,
-            #                                                           "dumb")
 
             # Run QSA
             (theta, theta1, passedSafetyTest) = QSA(trainX, trainY, trainT, seldonian_type, init_sol, init_sol1)
@@ -131,13 +124,7 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
         LS_solutions_found = LS_solutions_found,
         LS_fs = LS_fs,
         LS_failures_g1 = LS_failures_g1,
-        LS_upper_bound = LS_upper_bound,
-
-        # dumb_solutions_found = dumb_solutions_found,
-        # dumb_fs = dumb_fs,
-        # dumb_failures_g1 = dumb_failures_g1,
-        # dumb_upper_bound = dumb_upper_bound
-        )
+        LS_upper_bound = LS_upper_bound)
     print(f"Saved the file {outputFile}")
 
 
@@ -145,8 +132,8 @@ if __name__ == "__main__":
     print("Assuming the default: 50")
     nWorkers = 2
     print(f"Running experiments on {nWorkers} threads")
-    N = 10000
-    ms = np.logspace(-2, 0, num=3)  # 30 fractions
+    N = 1000000
+    ms = np.logspace(-1, 0, num=3)  # 30 fractions
     print("N {}, frac array: {}".format(N, ms))
     print("Running for: {}".format(sys.argv))
     numM = len(ms)

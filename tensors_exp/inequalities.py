@@ -30,12 +30,15 @@ def eval_estimate(element, Y, predicted_Y, T):
     type_mask = T.astype(str) == type_attribute
     Y_A = Y[type_mask]
     num_of_A = len(Y_A)
+    if num_of_A == 0:
+        return 0
     if element.startswith("TP"):
         # filter predict_Y where Y=1
         # Predicted_y = 1 and Y=1
         label_mask = Y == 1
         mask = torch.mul(torch.tensor(type_mask), torch.tensor(label_mask))
         probs = predicted_Y[mask]
+        # print(probs.shape, num_of_A)
         return torch.div(torch.sum(probs), num_of_A)
     elif element.startswith("TN"):
         # filter predict_Y where Y=0
@@ -64,6 +67,7 @@ def eval_estimate(element, Y, predicted_Y, T):
 def eval_func_bound(element, Y, predicted_Y, T, delta, inequality,
                     candidate_safety_ratio, predict_bound, modified_h):
     estimate = eval_estimate(element, Y, predicted_Y, T)
+    # print("Estimate", estimate)
     num_of_elements = get_num_of_elements(element, Y)
     if inequality == Inequality.T_TEST:
         variance = get_variance(element, estimate, predicted_Y, T, num_of_elements)

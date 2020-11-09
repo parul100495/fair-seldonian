@@ -39,19 +39,40 @@ def get_data(N, features, t_ratio, tp0_ratio, tp1_ratio, random_seed):
 
 
 # split data points
-def data_split(frac, All, random_state, mTest):
-    # We know that All = X, Y, T
-    all_train, all_test, Y_train, Y_test = train_test_split(All, All.iloc[:, -2], test_size=mTest, random_state=42)
-    # test dataset
-    T_test = all_test.iloc[:, -1]
-    X_test = all_test.iloc[:, :-2]
+def data_split(frac, all_train, random_state, N, old_train_data):
+    if old_train_data is not None:
+        present_frac = len(old_train_data)/N
+        remaining_frac = frac - present_frac
+        data_frac = len(all_train)/N
+        remain_frac = remaining_frac / data_frac
+        if remain_frac > 1:
+            remain_frac = 1
+    else:
+        remain_frac = frac
+    # more train data
+    print(f"random state {random_state}, remain frac {remain_frac}")
+    subsampling = all_train.sample(frac=remain_frac, random_state=random_state)
+    all_train.drop(subsampling.index, axis=0, inplace=True)
 
-    # train
-    subsampling = all_train.sample(frac=frac, random_state=random_state)
     subsampling = subsampling.reset_index()
     subsampling = subsampling.drop(columns=['index'])
+    subsampling.columns = [0, 1, 2, 3, 4, 5, 6]
+    # combine data
+    if old_train_data is not None:
+        print(old_train_data.shape, subsampling.shape)
+        subsampling = pd.concat([old_train_data, subsampling])
+        print(subsampling.shape)
     T = subsampling.iloc[:, -1]
     X = subsampling.iloc[:, :-2]
     Y = subsampling.iloc[:, -2]
-    return np.array(X_test), np.array(Y_test), np.array(T_test), np.array(X), np.array(Y), np.array(T)
+    return np.array(X), np.array(Y), np.array(T), all_train
 
+
+def get_test_data(All, mTest):
+    # We know that All = X, Y, T
+    all_train, all_test, Y_train, Y_test = train_test_split(All, All.iloc[:, -2], test_size = mTest,
+                                                              random_state = 42)
+    # test dataset
+    T_test = all_test.iloc[:, -1]
+    X_test = all_test.iloc[:, :-2]
+    return np.array(X_test), np.array(Y_test), np.array(T_test), all_train

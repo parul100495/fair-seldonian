@@ -32,6 +32,7 @@ def safety_test(theta, theta1, safe_data_X, safe_data_Y, safe_data_T, seldonian_
 def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type, init_sol, init_sol1):
     if init_sol is None:
         init_sol, init_sol1 = simple_logistic(cand_data_X, cand_data_Y)
+    print(type(cand_data_X), type(cand_data_Y), type(cand_data_T))
     print("Initial LS upperbound: ", eval_ghat(init_sol, init_sol1,
                                                cand_data_X, cand_data_Y, cand_data_T,
                                                seldonian_type))
@@ -39,7 +40,7 @@ def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, se
     theta1 = init_sol1.detach().numpy()
     init_theta = np.concatenate((theta, theta1))
     res = minimize(cand_obj, x0 = init_theta, method = 'Powell',
-                     options = {'disp': False, 'maxiter': 10000},
+                     options = {'disp': False, 'maxiter': 10},
                      args = (cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type))
     # ndarray -> tensor of theta
     theta_numpy = res.x[:-1]
