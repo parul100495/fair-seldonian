@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Code Documentation &mdash; MSR Project 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Results" href="results.html" />
+    <link rel="prev" title="Model" href="model.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> MSR Project
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="problem.html">Problem Statement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pre_req.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="queries.html">Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="results.html">Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MSR Project</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Code Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/code.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-config">
+<span id="code-documentation"></span><h1>Code Documentation<a class="headerlink" href="#module-config" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="config.config">
+<code class="sig-prename descclassname">config.</code><code class="sig-name descname">config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'database.ini'</span></em>, <em class="sig-param"><span class="n">section</span><span class="o">=</span><span class="default_value">'postgresql'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#config.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to pick the configuration from the section
+in the provided file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The path of the file which contains the configurations</p></li>
+<li><p><strong>section</strong> – The section inside the file which contains the configuration needed to connect to the database</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the database config needed to connect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-connect_database"></span><dl class="py function">
+<dt id="connect_database.connect_and_fetch_data">
+<code class="sig-prename descclassname">connect_database.</code><code class="sig-name descname">connect_and_fetch_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#connect_database.connect_and_fetch_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to connect to the database and fetch the rows
+from the database, given the query and config params of the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – The select query to be used to fetch data</p></li>
+<li><p><strong>params</strong> – The parameters used to contact the database server</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of rows in database fetched from the query</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-data_pre_processing"></span><dl class="py function">
+<dt id="data_pre_processing.clean_data">
+<code class="sig-prename descclassname">data_pre_processing.</code><code class="sig-name descname">clean_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_pre_processing.clean_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to clean the data in the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> – the dataframe containing the features of the datapoints</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the dataframe with the clean, processed values of the features</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="data_pre_processing.clean_labels">
+<code class="sig-prename descclassname">data_pre_processing.</code><code class="sig-name descname">clean_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_pre_processing.clean_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to clean the labels in the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Y</strong> – the array containing the labels of the datapoints</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the array of cleaned labels of the datapoints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="data_pre_processing.split_train_test">
+<code class="sig-prename descclassname">data_pre_processing.</code><code class="sig-name descname">split_train_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">ratio</span><span class="o">=</span><span class="default_value">0.3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_pre_processing.split_train_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to split the dataset into training and testing dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – the feature set of the datapoints for regression prediction</p></li>
+<li><p><strong>Y</strong> – the labels of the datapoints</p></li>
+<li><p><strong>ratio</strong> – the test dataset ratio</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the training and testing datasets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-regression_model"></span><dl class="py function">
+<dt id="regression_model.regression_model_fit">
+<code class="sig-prename descclassname">regression_model.</code><code class="sig-name descname">regression_model_fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">model</span><span class="o">=</span><span class="default_value">LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None, normalize=False)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#regression_model.regression_model_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to fit the provided model with the training dataset provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – the feature set of the datapoints for regression prediction</p></li>
+<li><p><strong>Y</strong> – the labels of the datapoints</p></li>
+<li><p><strong>model</strong> – The regression model to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the fitted regression model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="regression_model.regression_model_predict">
+<code class="sig-prename descclassname">regression_model.</code><code class="sig-name descname">regression_model_predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="headerlink" href="#regression_model.regression_model_predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to predict the labels for the test dataset provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – The feature set for which the prediction is to be made</p></li>
+<li><p><strong>model</strong> – The regression model used for the result</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Y labels predicted by the model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-error_analysis"></span><dl class="py function">
+<dt id="error_analysis.get_error">
+<code class="sig-prename descclassname">error_analysis.</code><code class="sig-name descname">get_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y_pred</span></em>, <em class="sig-param"><span class="n">Y_test</span></em><span class="sig-paren">)</span><a class="headerlink" href="#error_analysis.get_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is get the mean absolute error between the predicted label
+and the actual label</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y_pred</strong> – The predicted labels from the regression model</p></li>
+<li><p><strong>Y_test</strong> – The actual labels from the dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The mean absolute error value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-plot_results"></span><dl class="py function">
+<dt id="plot_results.plot">
+<code class="sig-prename descclassname">plot_results.</code><code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">Y_predicted</span></em>, <em class="sig-param"><span class="n">Y_baseline</span></em>, <em class="sig-param"><span class="n">X_label</span></em>, <em class="sig-param"><span class="n">Y_label</span></em>, <em class="sig-param"><span class="n">title</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plot_results.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the graph, given the data values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – the feature value array to be plotted on X-axis</p></li>
+<li><p><strong>Y</strong> – the true label value array to be plotted on Y-axis</p></li>
+<li><p><strong>Y_predicted</strong> – the predicted label value array to be plotted on Y-axis</p></li>
+<li><p><strong>Y_baseline</strong> – the baseline label value array to be plotted on Y-axis</p></li>
+<li><p><strong>X_label</strong> – The label name to be used for X-axis</p></li>
+<li><p><strong>Y_label</strong> – The label name to be used for Y-axis</p></li>
+<li><p><strong>title</strong> – The title of the plot</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="results.html" class="btn btn-neutral float-right" title="Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="model.html" class="btn btn-neutral float-left" title="Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Parul Gupta, Anjali Ramaprasad, Animesh Sahay, Pradhiksha Ashok Kumar, Soumya Polisetty
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
