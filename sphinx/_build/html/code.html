@@ -153,8 +153,95 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-qsa">
-<span id="code-documentation"></span><h1>Code Documentation<a class="headerlink" href="#module-qsa" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
+<p>[WIP] This page is currently under construction.</p>
+<span class="target" id="module-qsa"></span><dl class="function">
+<dt id="qsa.QSA">
+<code class="sig-prename descclassname">qsa.</code><code class="sig-name descname">QSA</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">Y</em>, <em class="sig-param">T</em>, <em class="sig-param">seldonian_type</em>, <em class="sig-param">init_sol</em>, <em class="sig-param">init_sol1</em><span class="sig-paren">)</span><a class="headerlink" href="#qsa.QSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to run the qsa (Quasi-Seldonian Algorithm)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – The features of the dataset</p></li>
+<li><p><strong>Y</strong> – The corresponding labels of the dataset</p></li>
+<li><p><strong>T</strong> – The corresponding sensitive attributes of the dataset</p></li>
+<li><p><strong>seldonian_type</strong> – The mode used in the experiment</p></li>
+<li><p><strong>init_sol</strong> – The initial theta values for the model</p></li>
+<li><p><strong>init_sol1</strong> – The additional initial theta values for the model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(theta, theta1, passed_safety) tuple containing optimal theta values and bool whether the candidate</p>
+</dd>
+</dl>
+<p>solution passed safety test or not.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="qsa.cand_obj">
+<code class="sig-prename descclassname">qsa.</code><code class="sig-name descname">cand_obj</code><span class="sig-paren">(</span><em class="sig-param">theta</em>, <em class="sig-param">cand_data_X</em>, <em class="sig-param">cand_data_Y</em>, <em class="sig-param">cand_data_T</em>, <em class="sig-param">candidate_ratio</em>, <em class="sig-param">seldonian_type</em><span class="sig-paren">)</span><a class="headerlink" href="#qsa.cand_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the value of the objective function which would be
+minimized by the optimizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> – The theta values for the model</p></li>
+<li><p><strong>cand_data_X</strong> – The features of the candidate dataset</p></li>
+<li><p><strong>cand_data_Y</strong> – The corresponding labels of the candidate dataset</p></li>
+<li><p><strong>cand_data_T</strong> – The corresponding sensitive attributes of the candidate dataset</p></li>
+<li><p><strong>candidate_ratio</strong> – The candidate:safety ratio used in the experiment</p></li>
+<li><p><strong>seldonian_type</strong> – The mode used in the experiment</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The objective value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="qsa.get_cand_solution">
+<code class="sig-prename descclassname">qsa.</code><code class="sig-name descname">get_cand_solution</code><span class="sig-paren">(</span><em class="sig-param">cand_data_X</em>, <em class="sig-param">cand_data_Y</em>, <em class="sig-param">cand_data_T</em>, <em class="sig-param">candidate_ratio</em>, <em class="sig-param">seldonian_type</em>, <em class="sig-param">init_sol</em>, <em class="sig-param">init_sol1</em><span class="sig-paren">)</span><a class="headerlink" href="#qsa.get_cand_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function provides the candidate solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cand_data_X</strong> – The features of the candidate dataset</p></li>
+<li><p><strong>cand_data_Y</strong> – The corresponding labels of the candidate dataset</p></li>
+<li><p><strong>cand_data_T</strong> – The corresponding sensitive attributes of the candidate dataset</p></li>
+<li><p><strong>seldonian_type</strong> – The mode used in the experiment</p></li>
+<li><p><strong>init_sol</strong> – The initial theta values for the model</p></li>
+<li><p><strong>init_sol1</strong> – The additional initial theta values for the model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The candidate solution (theta, theta1).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="qsa.safety_test">
+<code class="sig-prename descclassname">qsa.</code><code class="sig-name descname">safety_test</code><span class="sig-paren">(</span><em class="sig-param">theta</em>, <em class="sig-param">theta1</em>, <em class="sig-param">safe_data_X</em>, <em class="sig-param">safe_data_Y</em>, <em class="sig-param">safe_data_T</em>, <em class="sig-param">seldonian_type</em><span class="sig-paren">)</span><a class="headerlink" href="#qsa.safety_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function does the safety test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> – The optimal theta values for the model</p></li>
+<li><p><strong>theta1</strong> – The additional optimal theta values for the model</p></li>
+<li><p><strong>safe_data_X</strong> – The features of the safety dataset</p></li>
+<li><p><strong>safe_data_Y</strong> – The corresponding labels of the safety dataset</p></li>
+<li><p><strong>safe_data_T</strong> – The corresponding sensitive attributes of the safety dataset</p></li>
+<li><p><strong>seldonian_type</strong> – The mode used in the experiment</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Bool value of whether the candidate solution passed safety test or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <span class="target" id="module-logistic_regression_functions"></span><span class="target" id="module-equation_parser"></span><dl class="function">
 <dt id="equation_parser.construct_expr_tree_base">
 <code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">construct_expr_tree_base</code><span class="sig-paren">(</span><em class="sig-param">rev_polish_notation</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.construct_expr_tree_base" title="Permalink to this definition">¶</a></dt>

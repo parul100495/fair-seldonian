@@ -1,8 +1,9 @@
 from random import random, seed
 from sklearn.model_selection import train_test_split
-import time
 import numpy as np
 import pandas as pd
+# This code is meant to generate synthetic data
+# to run the experiments.
 
 
 def get_data(N, features, t_ratio, tp0_ratio, tp1_ratio, random_seed):

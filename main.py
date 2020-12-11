@@ -1,33 +1,36 @@
 import timeit
-import numpy as np
 import ray
 import logging
-logging.basicConfig( filename= 'main.py', level=logging.INFO )
-#ray.shutdown()
+logging.basicConfig(filename= 'main.py', level=logging.INFO)
 ray.init()
 from synthetic_data import *
 from qsa import *
 from logistic_regression_functions import *
 import time
+import sys
+
 # Folder where the experiment results will be saved
 bin_path = 'exp/exp_{}/bin/'
-import sys
+
 
 def store_result(theta, theta1, testX, testY, testT, passedSafetyTest,
                  worker_id, nWorkers, m, trial, numTrials, seldonian_type, ls_dumb):
     """
-    :param theta:
-    :param theta1:
-    :param testX:
-    :param testY:
-    :param testT:
-    :param passedSafetyTest:
-    :param worker_id:
-    :param nWorkers:
-    :param trial:
-    :param numTrials:
-    :param seldonian_type:
-    :return: solution_found, failure_g, upper_bound, fhat
+    This method is used to print and store the resultant information in a file.
+    This information is used for plotting and analysing the results.
+
+    :param theta: The parameters of the model
+    :param theta1: The additional parameter of the model, often the last parameter
+    :param testX: The features of the test dataset
+    :param testY: The labels of the test dataset
+    :param testT: The sensitive attribute column of the test dataset
+    :param passedSafetyTest: Bool value to indicate whether the safety test was passed or not
+    :param worker_id: Id of the worker thread
+    :param nWorkers: Total number of worker threads
+    :param trial: Trial number of the experiment on the worker thread
+    :param numTrials: Total number of trials
+    :param seldonian_type: Mode used in the experiment
+    :return: (solution_found, failure_g, upper_bound, fhat) tuple values
     """
     if ls_dumb:
         trueLogLoss = float(-fHat(theta, theta1, testX, testY))
@@ -58,6 +61,19 @@ def store_result(theta, theta1, testX, testY, testT, passedSafetyTest,
 
 @ray.remote
 def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonian_type):
+    """
+    This is the main function that runs the experiment
+
+    :param worker_id: Id of the worker thread
+    :param nWorkers: Total number of worker threads
+    :param ms: Array containing the fraction values of the amount od data to be used
+    :param numM: Number of fractions of data
+    :param numTrials: Total number of trials
+    :param mTest: The fraction of test samples to be used from the complete dataset
+    :param N: Number of data samples of the synthetic dataset
+    :param seldonian_type: Mode used in the experiment
+    :return: None
+    """
     # Results of the Seldonian algorithm runs
     s_solutions_found = np.zeros((numTrials, numM))
     s_failures_g1 = np.zeros((numTrials, numM))
@@ -69,12 +85,6 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
     LS_failures_g1 = np.zeros((numTrials, numM))
     LS_upper_bound = np.zeros((numTrials, numM))
     LS_fs = np.zeros((numTrials, numM))
-
-    # Results of the dumb classifier runs
-    dumb_solutions_found = np.zeros((numTrials, numM))
-    dumb_failures_g1 = np.zeros((numTrials, numM))
-    dumb_upper_bound = np.zeros((numTrials, numM))
-    dumb_fs = np.zeros((numTrials, numM))
 
     # Prepares file where experiment results will be saved
     experiment_number = worker_id
@@ -103,14 +113,6 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
                                                                     True, worker_id, nWorkers,
                                                                     m, trial, numTrials, seldonian_type, "LS")
 
-            # dumb classifier
-            # dumb_solutions_found[trial, mIndex] , dumb_failures_g1[trial, mIndex], dumb_upper_bound[
-            #     trial, mIndex], dumb_fs[trial, mIndex] = store_result(theta, theta1,
-            #                                                           testX, testY, testT,
-            #                                                           True, worker_id, nWorkers,
-            #                                                           m, trial, numTrials, seldonian_type,
-            #                                                           "dumb")
-
             # Run QSA
             (theta, theta1, passedSafetyTest) = QSA(trainX, trainY, trainT, seldonian_type, init_sol, init_sol1)
             s_solutions_found[trial, mIndex], s_failures_g1[trial, mIndex], s_upper_bound[
@@ -123,21 +125,15 @@ def run_experiments(worker_id, nWorkers, ms, numM, numTrials, mTest, N, seldonia
                 init_sol, init_sol1 = theta, theta1
 
     np.savez(outputFile, ms = ms,
-        s_solutions_found = s_solutions_found,
-        s_fs = s_fs,
-        s_failures_g1 = s_failures_g1,
-        s_upper_bound = s_upper_bound,
+             s_solutions_found = s_solutions_found,
+             s_fs = s_fs,
+             s_failures_g1 = s_failures_g1,
+             s_upper_bound = s_upper_bound,
 
-        LS_solutions_found = LS_solutions_found,
-        LS_fs = LS_fs,
-        LS_failures_g1 = LS_failures_g1,
-        LS_upper_bound = LS_upper_bound,
-
-        # dumb_solutions_found = dumb_solutions_found,
-        # dumb_fs = dumb_fs,
-        # dumb_failures_g1 = dumb_failures_g1,
-        # dumb_upper_bound = dumb_upper_bound
-        )
+             LS_solutions_found = LS_solutions_found,
+             LS_fs = LS_fs,
+             LS_failures_g1 = LS_failures_g1,
+             LS_upper_bound = LS_upper_bound)
     print(f"Saved the file {outputFile}")
 
 
@@ -148,15 +144,18 @@ if __name__ == "__main__":
     N = 10000
     ms = np.logspace(-2, 0, num=3)  # 30 fractions
     print("N {}, frac array: {}".format(N, ms))
-    print("Running for: {}".format(sys.argv))
+    print("Running for: {}".format(sys.argv[1]))
     numM = len(ms)
     numTrials = 2  # 2 * 50 = 100 samples per fraction
     mTest = 0.2  # about 0.2 * 1,000,000 test samples = fraction of total data
     print("Number of trials: ", numTrials)
-    # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials. Each thread saves its results to a file
+
+    # Start 'nWorkers' threads in parallel, each one running 'numTrials' trials.
+    # Each thread saves its results to a file
     tic = timeit.default_timer()
     _ = ray.get(
-        [run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest, N, "base") for worker_id in
+        [run_experiments.remote(worker_id, nWorkers, ms, numM, numTrials, mTest,
+                                N, sys.argv[1]) for worker_id in
           range(1, nWorkers + 1)])
     toc = timeit.default_timer()
     time_parallel = toc - tic  # Elapsed time in seconds

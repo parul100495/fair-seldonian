@@ -6,8 +6,19 @@ import torch
 candidate_ratio = 0.40
 
 
-# QSA
 def QSA(X, Y, T, seldonian_type, init_sol, init_sol1):
+    """
+    This function is used to run the qsa (Quasi-Seldonian Algorithm)
+
+    :param X: The features of the dataset
+    :param Y: The corresponding labels of the dataset
+    :param T: The corresponding sensitive attributes of the dataset
+    :param seldonian_type: The mode used in the experiment
+    :param init_sol: The initial theta values for the model
+    :param init_sol1: The additional initial theta values for the model
+    :return: (theta, theta1, passed_safety) tuple containing optimal theta values and bool whether the candidate
+    solution passed safety test or not.
+    """
     cand_data_X, safe_data_X, cand_data_Y, safe_data_Y = train_test_split(X, Y,
                                                                           test_size = 1 - candidate_ratio,
                                                                           shuffle = False)
@@ -22,6 +33,17 @@ def QSA(X, Y, T, seldonian_type, init_sol, init_sol1):
 
 
 def safety_test(theta, theta1, safe_data_X, safe_data_Y, safe_data_T, seldonian_type):
+    """
+    This function does the safety test.
+
+    :param theta: The optimal theta values for the model
+    :param theta1: The additional optimal theta values for the model
+    :param safe_data_X: The features of the safety dataset
+    :param safe_data_Y: The corresponding labels of the safety dataset
+    :param safe_data_T: The corresponding sensitive attributes of the safety dataset
+    :param seldonian_type: The mode used in the experiment
+    :return: Bool value of whether the candidate solution passed safety test or not.
+    """
     upper_bound = eval_ghat(theta, theta1, safe_data_X, safe_data_Y, safe_data_T, seldonian_type)
     print("Safety test upperbound: ", upper_bound)
     if upper_bound > 0.0:
@@ -29,7 +51,19 @@ def safety_test(theta, theta1, safe_data_X, safe_data_Y, safe_data_T, seldonian_
     return True
 
 
-def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type, init_sol, init_sol1):
+def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio,
+                      seldonian_type, init_sol, init_sol1):
+    """
+    This function provides the candidate solution.
+
+    :param cand_data_X: The features of the candidate dataset
+    :param cand_data_Y: The corresponding labels of the candidate dataset
+    :param cand_data_T: The corresponding sensitive attributes of the candidate dataset
+    :param seldonian_type: The mode used in the experiment
+    :param init_sol: The initial theta values for the model
+    :param init_sol1: The additional initial theta values for the model
+    :return: The candidate solution (theta, theta1).
+    """
     if init_sol is None:
         init_sol, init_sol1 = simple_logistic(cand_data_X, cand_data_Y)
     print("Initial LS upperbound: ", eval_ghat(init_sol, init_sol1,
@@ -50,6 +84,18 @@ def get_cand_solution(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, se
 
 
 def cand_obj(theta, cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type):
+    """
+    This function calculates the value of the objective function which would be
+    minimized by the optimizer.
+
+    :param theta: The theta values for the model
+    :param cand_data_X: The features of the candidate dataset
+    :param cand_data_Y: The corresponding labels of the candidate dataset
+    :param cand_data_T: The corresponding sensitive attributes of the candidate dataset
+    :param candidate_ratio: The candidate:safety ratio used in the experiment
+    :param seldonian_type: The mode used in the experiment
+    :return: The objective value.
+    """
     theta_numpy = theta[:-1]
     theta1_numpy = theta[-1]
     theta0 = torch.tensor(theta_numpy)
@@ -64,7 +110,7 @@ def cand_obj(theta, cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seld
     return float(-result)
 
 
-def get_cand_solution2(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type):
+def _get_cand_solution2(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type):
     init_sol, init_sol1 = simple_logistic(cand_data_X, cand_data_Y)
     init_fhat = fHat(init_sol, init_sol1, cand_data_X, cand_data_Y)
     init_ghat = eval_ghat(init_sol, init_sol1, cand_data_X, cand_data_Y, cand_data_T,
@@ -80,7 +126,7 @@ def get_cand_solution2(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, s
             fin_lambda = float(lambda_value[i])
             break
     if not fin_lambda:
-    	fin_lambda = 1
+        fin_lambda = 1
     print("Initial LS upperbound: ", eval_ghat(init_sol, init_sol1,
                                                cand_data_X, cand_data_Y, cand_data_T,
                                                seldonian_type))
@@ -98,7 +144,7 @@ def get_cand_solution2(cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, s
     return theta0, theta1
 
 
-def cand_obj2(theta, cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type, lambda_value):
+def _cand_obj2(theta, cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, seldonian_type, lambda_value):
     theta_numpy = theta[:-1]
     theta1_numpy = theta[-1]
     theta0 = torch.tensor(theta_numpy)
@@ -111,6 +157,4 @@ def cand_obj2(theta, cand_data_X, cand_data_Y, cand_data_T, candidate_ratio, sel
         result = float(-1000 - (lambda_value * upper_bound))
     else:
         result = float(-result - (lambda_value * upper_bound))
-    #if upper_bound > 0.0:
-    #    result = -10000.0 - upper_bound
     return float(-result)
