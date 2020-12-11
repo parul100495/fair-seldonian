@@ -1,22 +1,25 @@
 Code Documentation
 ==================
 
-.. automodule:: config
+.. automodule:: qsa
     :members:
 
-.. automodule:: connect_database
+.. automodule:: logistic_regression_functions
     :members:
 
-.. automodule:: data_pre_processing
+.. automodule:: equation_parser
     :members:
 
-.. automodule:: regression_model
+.. automodule:: get_bounds
     :members:
 
-.. automodule:: error_analysis
+.. automodule:: inequalities
     :members:
 
-.. automodule:: plot_results
+.. automodule:: gather_results
+    :members:
+
+.. automodule:: create_plots
     :members:
 
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to MSR Project! &mdash; MSR Project 1.0 documentation</title>
+  <title>Welcome to FairSeldonian Project! &mdash; Fair-Seldonian 1.0 documentation</title>
   
 
   
@@ -26,18 +26,18 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Problem Statement" href="problem.html" /> 
+    <link rel="next" title="Introduction" href="intro.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +51,7 @@
           
 
           
-            <a href="#" class="icon icon-home" alt="Documentation Home"> MSR Project
+            <a href="#" class="icon icon-home" alt="Documentation Home"> Fair-Seldonian
           
 
           
@@ -84,14 +84,10 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="problem.html">Problem Statement</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pre_req.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="queries.html">Queries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variants.html">Variants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="results.html">Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -107,7 +103,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">MSR Project</a>
+          <a href="#">Fair-Seldonian</a>
         
       </nav>
 
@@ -138,7 +134,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Welcome to MSR Project!</li>
+      <li>Welcome to FairSeldonian Project!</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -157,53 +153,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-msr-project">
-<h1>Welcome to MSR Project!<a class="headerlink" href="#welcome-to-msr-project" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference external" href="https://2020.msrconf.org/">International Conference on Mining Software Repositories (MSR)</a>  has hosted the mining challenge every year, since 2006.
-With this challenge, they aim at everyone interested to apply their tools to a common dataset.
-The challenge is for researchers and practitioners to use their mining tools and approaches on a dare.
-The goal is to answer questions about a given dataset, that were previously unanswered.</p>
-<p>MSR 2020 is a challenge which presents <a class="reference external" href="https://docs.softwareheritage.org/devel/swh-dataset/index.html">Software Heritage Graph Dataset</a>.
-This is one of the largest known existing public archive of software source code and accompanying development history.
-More information can be found in ‘Dataset’ tab.</p>
-<p>Our goal here is to answer certain research questions (mentioned in ‘Problem Statement’ tab) and gain some meaninful insights from the dataset.</p>
+  <div class="section" id="welcome-to-fairseldonian-project">
+<h1>Welcome to FairSeldonian Project!<a class="headerlink" href="#welcome-to-fairseldonian-project" title="Permalink to this headline">¶</a></h1>
+<p>With the growing usage of machine learning and artificial intelligence in real lives,
+the need for incorporating the mitigation of unethical and unfair elements in machine
+learning models is rising at an alarming rate.
+This requires us to develop a tool to evaluate and mitigate unfairness in these models
+that would help data scientists in dealing with such problems in the models they develop.</p>
+<p>Fair-Seldonian leverages Seldonian algorithm to tackles this problem where the responsibility
+of regulating the undesirable behavior of machine learning algorithms and making them <a href="#id1"><span class="problematic" id="id2">`</span></a>fair’
+is transferred from user to designer of the algorithm (i.e. at the creation step itself by ML
+researcher).
+This is implemented for fairness in machine learning for any generic constraint.
+In addition, some extensions for optimizing the bounds and making it more efficient
+are also present.</p>
+<p>More details of Seldonian is present <a class="reference external" href="https://aisafety.cs.umass.edu">here</a>.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="problem.html">Problem Statement</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="problem.html#motivation">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#pre-requisites">Pre-requisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#collaboration">Collaboration</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html#complete-dataset">Complete Dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html#teaser-dataset">Teaser Dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html#popular-4k">popular-4k</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html#popular-3k">popular-3k</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html#relational-schema">Relational Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pre_req.html">Quick Start</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pre_req.html#pre-requisities">Pre-requisities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pre_req.html#getting-started">Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pre_req.html#reference">Reference</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="queries.html">Queries</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="queries.html#create-final-informative-table">Create final informative table</a></li>
-<li class="toctree-l2"><a class="reference internal" href="queries.html#fetch-the-column-name-in-the-final-table">Fetch the column name in the final table</a></li>
-<li class="toctree-l2"><a class="reference internal" href="queries.html#fetching-the-features-for-datapoints">Fetching the features for datapoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="queries.html#fetching-the-labels-lifespan-for-the-datapoints">Fetching the labels (lifespan) for the datapoints</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="model.html#high-level-design">High Level Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model.html#linear-regression">Linear Regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model.html#evaluation">Evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variants.html">Variants</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="variants.html#basic-seldonian">Basic Seldonian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variants.html#improvements-to-confidence-interval">Improvements to confidence interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variants.html#improvement-in-bound-propagation-around-constant-values">Improvement in bound propagation around constant values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variants.html#improvement-in-bound-propagation-from-union-bound">Improvement in bound propagation from union bound</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variants.html#optimization-with-lagrangian-kkt">Optimization with Lagrangian/KKT</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="results.html">Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 </div>
 </div>
@@ -216,7 +200,7 @@ More information can be found in ‘Dataset’ tab.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="problem.html" class="btn btn-neutral float-right" title="Problem Statement" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -227,7 +211,7 @@ More information can be found in ‘Dataset’ tab.</p>
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Parul Gupta, Anjali Ramaprasad, Animesh Sahay, Pradhiksha Ashok Kumar, Soumya Polisetty
+        &copy; Copyright 2020, Parul Gupta
 
     </p>
   </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Results &mdash; MSR Project 1.0 documentation</title>
+  <title>Results &mdash; Fair-Seldonian 1.0 documentation</title>
   
 
   
@@ -26,19 +26,17 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="References" href="references.html" />
-    <link rel="prev" title="Code Documentation" href="code.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -52,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> MSR Project
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Fair-Seldonian
           
 
           
@@ -84,15 +82,11 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="problem.html">Problem Statement</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pre_req.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="queries.html">Queries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variants.html">Variants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code Documentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -108,7 +102,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">MSR Project</a>
+          <a href="index.html">Fair-Seldonian</a>
         
       </nav>
 
@@ -167,12 +161,12 @@
 </div>
 <p>We have plotted graphs comparing the lifespan to the various features such as total number of snapshot counts, number of targets, original date, number of revisions, number of releases and last revision date. Each diagram shows three scatter plots : The actual value obtained from the table, the value predicted by the model and the average lifespan value which is our baseline.</p>
 <p>According to our graphs, We infer that the lifespan feature does not heavily depend on the values of the other features individually. Even though the number of snapshots are the same, the lifespan values differ showing that the snapshot count does not matter. However, A combination of these features will affect the lifespan value which means the combination of features does matter. This is proved by the fact that our model obtained a lower error rate than the baseline.</p>
-<a class="reference internal image-reference" href="_images/2.png"><img alt="_images/2.png" src="_images/2.png" style="width: 500px;" /></a>
-<a class="reference internal image-reference" href="_images/3.png"><img alt="_images/3.png" src="_images/3.png" style="width: 500px;" /></a>
-<a class="reference internal image-reference" href="_images/4.png"><img alt="_images/4.png" src="_images/4.png" style="width: 500px;" /></a>
-<a class="reference internal image-reference" href="_images/5.png"><img alt="_images/5.png" src="_images/5.png" style="width: 500px;" /></a>
-<a class="reference internal image-reference" href="_images/6.png"><img alt="_images/6.png" src="_images/6.png" style="width: 500px;" /></a>
-<a class="reference internal image-reference" href="_images/7.png"><img alt="_images/7.png" src="_images/7.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/2.png"><img alt="images/2.png" src="images/2.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/3.png"><img alt="images/3.png" src="images/3.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/4.png"><img alt="images/4.png" src="images/4.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/5.png"><img alt="images/5.png" src="images/5.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/6.png"><img alt="images/6.png" src="images/6.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/7.png"><img alt="images/7.png" src="images/7.png" style="width: 500px;" /></a>
 </div>
 
 
@@ -181,22 +175,13 @@
           </div>
           <footer>
   
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="code.html" class="btn btn-neutral float-left" title="Code Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Parul Gupta, Anjali Ramaprasad, Animesh Sahay, Pradhiksha Ashok Kumar, Soumya Polisetty
+        &copy; Copyright 2020, Parul Gupta
 
     </p>
   </div>

@@ -17,9 +17,9 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'MSR Project'
-copyright = '2020, Parul Gupta, Anjali Ramaprasad, Animesh Sahay, Pradhiksha Ashok Kumar, Soumya Polisetty'
-author = 'Parul Gupta, Anjali Ramaprasad, Animesh Sahay, Pradhiksha Ashok Kumar, Soumya Polisetty'
+project = 'Fair-Seldonian'
+copyright = '2020, Parul Gupta'
+author = 'Parul Gupta'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0'
