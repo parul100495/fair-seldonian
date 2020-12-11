@@ -68,6 +68,20 @@ and find the confidence interval using that :math:`\delta`. The figures below sh
 
 .. image:: images/bound-yes.png
 
+To use this mode, you need to add CLI parameter `bound` as:
+
+.. code-block::
+
+    python main.py bound
+
+Combining all of the above optimizations
+----------------------------------------
+This can be done by using the `opt` mode as:
+
+.. code-block::
+
+    python main.py opt
+
 Optimization with Lagrangian/KKT
 --------------------------------
 To use Lagrangian/KKT technique to optimise the objective function to get candidate solution, several additional modification are done:

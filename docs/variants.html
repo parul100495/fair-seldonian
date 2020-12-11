@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#improvements-to-confidence-interval">Improvements to confidence interval</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#improvement-in-bound-propagation-around-constant-values">Improvement in bound propagation around constant values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#improvement-in-bound-propagation-from-union-bound">Improvement in bound propagation from union bound</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combining-all-of-the-above-optimizations">Combining all of the above optimizations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optimization-with-lagrangian-kkt">Optimization with Lagrangian/KKT</a></li>
 </ul>
 </li>
@@ -210,6 +211,17 @@ bound and give us better accuracy and more valid solutions.</p>
 <p>and find the confidence interval using that <span class="math notranslate nohighlight">\(\delta\)</span>. The figures below show the naive and improved implement using this functionality respectively.</p>
 <img alt="_images/bound-no.png" src="_images/bound-no.png" />
 <img alt="_images/bound-yes.png" src="_images/bound-yes.png" />
+<p>To use this mode, you need to add CLI parameter <cite>bound</cite> as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="n">bound</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="combining-all-of-the-above-optimizations">
+<h2>Combining all of the above optimizations<a class="headerlink" href="#combining-all-of-the-above-optimizations" title="Permalink to this headline">¶</a></h2>
+<p>This can be done by using the <cite>opt</cite> mode as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="n">opt</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="optimization-with-lagrangian-kkt">
 <h2>Optimization with Lagrangian/KKT<a class="headerlink" href="#optimization-with-lagrangian-kkt" title="Permalink to this headline">¶</a></h2>
