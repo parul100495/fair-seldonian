@@ -23,7 +23,7 @@ Library pre-requisites
 
 Quick start
 -----------
-The complete code resides in `code` folder.
+The complete code resides in root folder.
 To run the experiment, you need to amend configurations in `main.py`.
 
 
@@ -39,9 +39,11 @@ Configuration
 -------------
 The user must setup the following things to make full use of this framework:
 
-- **Configuration of the experiment structure**
+- **Configuration of the experiment structure** : In the `main.py`, the user must configure the values for number of threads, number of fractions, number of trials per thread, test:train ratio of the dataset, etc.
+
+- **Configure logistic regression functions** : The user must provide the values of delta (significance level), inequality type (currently supports Hoeffding inequality and t-test), fairness constraint (currently, it supports base variables as real number, True positive, true negative, false positive and false negative; binary operators: +, -, *, / and unary operator: absolute) and candidate-to-safety ratio in this file. In addition to this, the user is expected to replace `simple_logistic` with their model, and provide predict function for their model.
 
 
 Collaboration
 -------------
-Please feel free to contribute to this code base.
+Please feel free to contribute to this code base. For any queries, contact parul100495@gmail.com
