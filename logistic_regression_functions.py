@@ -12,6 +12,16 @@ candidate_ratio = 0.40
 
 
 def predict(theta, theta1, X):
+    """
+    This is the predict function for Logistic Regression. This can be changed into predict function of the user defined model.
+    Currently, it implements the following:
+    \frac{1}{1 + e^-(X.theta + theta1)}
+
+    :param theta: The optimal theta values for the model
+    :param theta1: The additional optimal theta values for the model
+    :param X: The features of the dataset
+    :return: The probability value of label 1 of the complete dataset
+    """
     # returns tensor
     # \frac{1}{1 + e^-(X.theta + theta1)}
     if theta1 is None or theta is None:
@@ -28,6 +38,17 @@ def predict(theta, theta1, X):
 
 
 def fHat(theta, theta1, X, Y):
+    """
+    This is the main objective function.
+    This must be change by the user according to his/her needs.
+    Currently, it implements negative log loss of the model.
+
+    :param theta: The optimal theta values for the model
+    :param theta1: The additional optimal theta values for the model
+    :param X: The features of the dataset
+    :param Y: The true labels of the dataset
+    :return: The negative log loss
+    """
     # -ve log loss
     pred = predict(theta, theta1, X)
     predicted_Y = torch.stack([torch.sub(1, pred), pred], dim = 1)
@@ -36,6 +57,14 @@ def fHat(theta, theta1, X, Y):
 
 
 def simple_logistic(X, Y):
+    """
+    This function runs the simple logistic regression.
+    This must be replaced by the user to include his/her own model.
+
+    :param X: The features of the dataset
+    :param Y: The true labels of the dataset
+    :return: The theta values (parameters) of the model
+    """
     # return tensor
     try:
         reg = LogisticRegression(solver = 'lbfgs').fit(X, Y)

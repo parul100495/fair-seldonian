@@ -7,6 +7,15 @@ img_path = 'exp/lag_exp/images/'
 
 
 def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc):
+    """
+    This function is used to plot the results from the csv files and store the final graph
+
+    :param filename: The csv file path from where the data is imported
+    :param ylabel: The lable on the Y-axis of the graph
+    :param output_file: The path where the graph image must be stored
+    :param is_yAxis_prob: Bool of whether the Y-axis is probabity value or not
+    :param legend_loc: The location of the legend
+    """
     file_ms, file_QSA, file_QSA_stderror, file_LS, file_LS_stderror = np.loadtxt(fileName, delimiter = ',',
                                                                                    unpack = True )
 
@@ -20,10 +29,6 @@ def loadAndPlotResults(fileName, ylabel, output_file, is_yAxis_prob, legend_loc)
 
     if is_yAxis_prob:
         plt.ylim(-0.1, 1.1)
-    # else:
-    # plt.ylim(-0.2, 2.2)
-    # plt.plot([1, 100000], [1.25, 1.25], ':k');
-    # plt.plot([1, 100000], [2.1,  2.1],  ':k');
 
     plt.plot ( file_ms, file_QSA, 'b-', linewidth = 3, label = 'QSA' )
     plt.errorbar ( file_ms, file_QSA, yerr = file_QSA_stderror, fmt = '.k' );

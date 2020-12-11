@@ -16,8 +16,7 @@ def QSA(X, Y, T, seldonian_type, init_sol, init_sol1):
     :param seldonian_type: The mode used in the experiment
     :param init_sol: The initial theta values for the model
     :param init_sol1: The additional initial theta values for the model
-    :return: (theta, theta1, passed_safety) tuple containing optimal theta values and bool whether the candidate
-    solution passed safety test or not.
+    :return: (theta, theta1, passed_safety) tuple containing optimal theta values and bool whether the candidate solution passed safety test or not.
     """
     cand_data_X, safe_data_X, cand_data_Y, safe_data_Y = train_test_split(X, Y,
                                                                           test_size = 1 - candidate_ratio,

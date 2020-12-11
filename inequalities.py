@@ -7,6 +7,7 @@ import torch
 
 def eval_estimate(element, Y, predicted_Y, T):
     """
+    Estimates the value of the base variable.
     Assumes that Y and predicted_y contain 0,1 binary classification
     Suppose we are calculating for FP(A).
     Assume X to be an indicator function defined only in case type=A
@@ -81,6 +82,10 @@ def eval_func_bound(element, Y, predicted_Y, T, delta, inequality,
 # Inequality class #
 ####################
 class Inequality(Enum):
+    """
+    The Enum defining the inequality type.
+    Currently, it supports T-test and Hoeffding.
+    """
     T_TEST = 1
     HOEFFDING_INEQUALITY = 2
 

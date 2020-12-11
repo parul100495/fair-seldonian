@@ -87,7 +87,14 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="variants.html">Variants</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#qsa-quasi-seldonian-algorithm">QSA (Quasi-Seldonian Algorithm)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ml-model">ML Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-equation_parser">Equation parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-inequalities">Inequality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gather_results">Viewing results</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -155,7 +162,10 @@
             
   <div class="section" id="code-documentation">
 <h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
-<p>[WIP] This page is currently under construction.</p>
+<p>This provides the documentation guide of the various functions in the repository.</p>
+<div class="section" id="qsa-quasi-seldonian-algorithm">
+<h2>QSA (Quasi-Seldonian Algorithm)<a class="headerlink" href="#qsa-quasi-seldonian-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>Following are the functions used by the Seldonian framework. This includes candidate selection process and safety test.</p>
 <span class="target" id="module-qsa"></span><dl class="function">
 <dt id="qsa.QSA">
 <code class="sig-prename descclassname">qsa.</code><code class="sig-name descname">QSA</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">Y</em>, <em class="sig-param">T</em>, <em class="sig-param">seldonian_type</em>, <em class="sig-param">init_sol</em>, <em class="sig-param">init_sol1</em><span class="sig-paren">)</span><a class="headerlink" href="#qsa.QSA" title="Permalink to this definition">¶</a></dt>
@@ -172,10 +182,9 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(theta, theta1, passed_safety) tuple containing optimal theta values and bool whether the candidate</p>
+<dd class="field-even"><p>(theta, theta1, passed_safety) tuple containing optimal theta values and bool whether the candidate solution passed safety test or not.</p>
 </dd>
 </dl>
-<p>solution passed safety test or not.</p>
 </dd></dl>
 
 <dl class="function">
@@ -242,7 +251,79 @@ minimized by the optimizer.</p>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-logistic_regression_functions"></span><span class="target" id="module-equation_parser"></span><dl class="function">
+</div>
+<div class="section" id="ml-model">
+<h2>ML Model<a class="headerlink" href="#ml-model" title="Permalink to this headline">¶</a></h2>
+<p>The following functions correspond to model and constraint definition. The user is expected to make changes in this file.</p>
+<span class="target" id="module-logistic_regression_functions"></span><dl class="function">
+<dt id="logistic_regression_functions.fHat">
+<code class="sig-prename descclassname">logistic_regression_functions.</code><code class="sig-name descname">fHat</code><span class="sig-paren">(</span><em class="sig-param">theta</em>, <em class="sig-param">theta1</em>, <em class="sig-param">X</em>, <em class="sig-param">Y</em><span class="sig-paren">)</span><a class="headerlink" href="#logistic_regression_functions.fHat" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main objective function.
+This must be change by the user according to his/her needs.
+Currently, it implements negative log loss of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> – The optimal theta values for the model</p></li>
+<li><p><strong>theta1</strong> – The additional optimal theta values for the model</p></li>
+<li><p><strong>X</strong> – The features of the dataset</p></li>
+<li><p><strong>Y</strong> – The true labels of the dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The negative log loss</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="logistic_regression_functions.predict">
+<code class="sig-prename descclassname">logistic_regression_functions.</code><code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">theta</em>, <em class="sig-param">theta1</em>, <em class="sig-param">X</em><span class="sig-paren">)</span><a class="headerlink" href="#logistic_regression_functions.predict" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>This is the predict function for Logistic Regression. This can be changed into predict function of the user defined model.
+Currently, it implements the following:</p>
+</div></blockquote>
+<p>rac{1}{1 + e^-(X.theta + theta1)}</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">param theta</dt>
+<dd class="field-odd"><p>The optimal theta values for the model</p>
+</dd>
+<dt class="field-even">param theta1</dt>
+<dd class="field-even"><p>The additional optimal theta values for the model</p>
+</dd>
+<dt class="field-odd">param X</dt>
+<dd class="field-odd"><p>The features of the dataset</p>
+</dd>
+<dt class="field-even">return</dt>
+<dd class="field-even"><p>The probability value of label 1 of the complete dataset</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="logistic_regression_functions.simple_logistic">
+<code class="sig-prename descclassname">logistic_regression_functions.</code><code class="sig-name descname">simple_logistic</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">Y</em><span class="sig-paren">)</span><a class="headerlink" href="#logistic_regression_functions.simple_logistic" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function runs the simple logistic regression.
+This must be replaced by the user to include his/her own model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – The features of the dataset</p></li>
+<li><p><strong>Y</strong> – The true labels of the dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The theta values (parameters) of the model</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-equation_parser">
+<span id="equation-parser"></span><h2>Equation parser<a class="headerlink" href="#module-equation_parser" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
 <dt id="equation_parser.construct_expr_tree_base">
 <code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">construct_expr_tree_base</code><span class="sig-paren">(</span><em class="sig-param">rev_polish_notation</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.construct_expr_tree_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns root of constructed tree for given postfix expression</p>
@@ -259,170 +340,81 @@ minimized by the optimizer.</p>
 <dl class="function">
 <dt id="equation_parser.eval_expr_tree_base">
 <code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">eval_expr_tree_base</code><span class="sig-paren">(</span><em class="sig-param">t_node</em>, <em class="sig-param">Y</em>, <em class="sig-param">predicted_Y</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.eval_expr_tree_base" title="Permalink to this definition">¶</a></dt>
-<dd><p>To evaluate estimate of the expression tree
-:param t_node: expr_tree node
-:param Y: pandas::Series
-:param predicted_Y: tensor
-:param T: pandas::Series
-:return: estimate value: float</p>
+<dd><p>A utility function to evaluate estimate of the expression tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t_node</strong> – expr_tree node</p></li>
+<li><p><strong>Y</strong> – pandas::Series</p></li>
+<li><p><strong>predicted_Y</strong> – tensor</p></li>
+<li><p><strong>T</strong> – pandas::Series</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>estimate value: float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="equation_parser.eval_expr_tree_conf_interval_base">
 <code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">eval_expr_tree_conf_interval_base</code><span class="sig-paren">(</span><em class="sig-param">t_node</em>, <em class="sig-param">Y</em>, <em class="sig-param">predicted_Y</em>, <em class="sig-param">T</em>, <em class="sig-param">delta</em>, <em class="sig-param">inequality</em>, <em class="sig-param">candidate_safety_ratio</em>, <em class="sig-param">predict_bound</em>, <em class="sig-param">modified_h</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.eval_expr_tree_conf_interval_base" title="Permalink to this definition">¶</a></dt>
-<dd><p>To evaluate confidence interval of the expression tree
-:param t_node: expr_tree node
-:param Y: pandas::Series
-:param predicted_Y: tensor
-:param T: pandas::Series
-:param conf_prob: float in [0, 1]
-:return:</p>
+<dd><p>To evaluate confidence interval of the expression tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t_node</strong> – expr_tree node</p></li>
+<li><p><strong>Y</strong> – pandas::Series The true labels of the dataset</p></li>
+<li><p><strong>predicted_Y</strong> – tensor The predicted labels of the dataset</p></li>
+<li><p><strong>T</strong> – pandas::Series The sensitive attributes of the dataset</p></li>
+<li><p><strong>delta</strong> – float in [0, 1] The significance level</p></li>
+<li><p><strong>inequality</strong> – Enum The inequality to be used - Hoeffding/T-test</p></li>
+<li><p><strong>candidate_safety_ratio</strong> – The candidate to dafety ratio used in the experiment</p></li>
+<li><p><strong>predict_bound</strong> – Bool to tell whether we are finding bound for candidate or safety data</p></li>
+<li><p><strong>modified_h</strong> – Bool to tell whether or not modified confidence bound is to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>upper and lower bound of the estimate of the constraint</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="equation_parser.expr_tree">
 <em class="property">class </em><code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">expr_tree</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.expr_tree" title="Permalink to this definition">¶</a></dt>
-<dd><p>An expression tree node</p>
+<dd><p>An expression tree node of the constraint tree</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="equation_parser.inorder">
 <code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">inorder</code><span class="sig-paren">(</span><em class="sig-param">t_node</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.inorder" title="Permalink to this definition">¶</a></dt>
-<dd><p>A utility function to do inorder traversal
-:param t_node: expr_tree node
-:return: None</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="equation_parser.isFunc">
-<code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">isFunc</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.isFunc" title="Permalink to this definition">¶</a></dt>
-<dd><p>A utility function to check if ‘element’ is one of FP, FN, TP, TN
-:param element: expr_tree node
-:return: bool</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="equation_parser.isMod">
-<code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">isMod</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.isMod" title="Permalink to this definition">¶</a></dt>
-<dd><p>A utility function to check if ‘element’ is mod function
-:param element: expr_tree node
-:return: bool</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="equation_parser.isOperator">
-<code class="sig-prename descclassname">equation_parser.</code><code class="sig-name descname">isOperator</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="headerlink" href="#equation_parser.isOperator" title="Permalink to this definition">¶</a></dt>
-<dd><p># A utility function to check if ‘element’ is an operator
-:param element: expr_tree node
-:return: bool</p>
-</dd></dl>
-
-<span class="target" id="module-get_bounds"></span><dl class="function">
-<dt id="get_bounds.eval_abs_bound">
-<code class="sig-prename descclassname">get_bounds.</code><code class="sig-name descname">eval_abs_bound</code><span class="sig-paren">(</span><em class="sig-param">l_x</em>, <em class="sig-param">u_x</em><span class="sig-paren">)</span><a class="headerlink" href="#get_bounds.eval_abs_bound" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>A utility function to print inorder traversal</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>l_x</strong> – lower bound</p></li>
-<li><p><strong>u_x</strong> – upper bound</p></li>
-</ul>
+<dd class="field-odd"><p><strong>t_node</strong> – expr_tree node</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>lower and upper bound of abs operation</p>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="get_bounds.eval_add_bound">
-<code class="sig-prename descclassname">get_bounds.</code><code class="sig-name descname">eval_add_bound</code><span class="sig-paren">(</span><em class="sig-param">l_x</em>, <em class="sig-param">u_x</em>, <em class="sig-param">l_y</em>, <em class="sig-param">u_y</em><span class="sig-paren">)</span><a class="headerlink" href="#get_bounds.eval_add_bound" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>l_x</strong> – lower bound of left child</p></li>
-<li><p><strong>u_x</strong> – upper bound of left child</p></li>
-<li><p><strong>l_y</strong> – lower bound of right child</p></li>
-<li><p><strong>u_y</strong> – upper bound of right child</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>lower and upper bound of add operation</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="get_bounds.eval_div_bound">
-<code class="sig-prename descclassname">get_bounds.</code><code class="sig-name descname">eval_div_bound</code><span class="sig-paren">(</span><em class="sig-param">l_x</em>, <em class="sig-param">u_x</em>, <em class="sig-param">l_y</em>, <em class="sig-param">u_y</em><span class="sig-paren">)</span><a class="headerlink" href="#get_bounds.eval_div_bound" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>l_x</strong> – lower bound of left child</p></li>
-<li><p><strong>u_x</strong> – upper bound of left child</p></li>
-<li><p><strong>l_y</strong> – lower bound of right child</p></li>
-<li><p><strong>u_y</strong> – upper bound of right child</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>lower and upper bound of div operation</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="get_bounds.eval_multiply_bound">
-<code class="sig-prename descclassname">get_bounds.</code><code class="sig-name descname">eval_multiply_bound</code><span class="sig-paren">(</span><em class="sig-param">l_x</em>, <em class="sig-param">u_x</em>, <em class="sig-param">l_y</em>, <em class="sig-param">u_y</em><span class="sig-paren">)</span><a class="headerlink" href="#get_bounds.eval_multiply_bound" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>l_x</strong> – lower bound of left child</p></li>
-<li><p><strong>u_x</strong> – upper bound of left child</p></li>
-<li><p><strong>l_y</strong> – lower bound of right child</p></li>
-<li><p><strong>u_y</strong> – upper bound of right child</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>lower and upper bound of multiply operation</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="get_bounds.eval_subtract_bound">
-<code class="sig-prename descclassname">get_bounds.</code><code class="sig-name descname">eval_subtract_bound</code><span class="sig-paren">(</span><em class="sig-param">l_x</em>, <em class="sig-param">u_x</em>, <em class="sig-param">l_y</em>, <em class="sig-param">u_y</em><span class="sig-paren">)</span><a class="headerlink" href="#get_bounds.eval_subtract_bound" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>l_x</strong> – lower bound of left child</p></li>
-<li><p><strong>u_x</strong> – upper bound of left child</p></li>
-<li><p><strong>l_y</strong> – lower bound of right child</p></li>
-<li><p><strong>u_y</strong> – upper bound of right child</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>lower and upper bound of subtract operation</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="get_bounds.isMod">
-<code class="sig-prename descclassname">get_bounds.</code><code class="sig-name descname">isMod</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="headerlink" href="#get_bounds.isMod" title="Permalink to this definition">¶</a></dt>
-<dd><p>A utility function to check if ‘element’ is mod function
-:param element: expr_tree node
-:return: bool</p>
-</dd></dl>
-
-<span class="target" id="module-inequalities"></span><dl class="class">
+</div>
+<div class="section" id="module-inequalities">
+<span id="inequality"></span><h2>Inequality<a class="headerlink" href="#module-inequalities" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
 <dt id="inequalities.Inequality">
 <em class="property">class </em><code class="sig-prename descclassname">inequalities.</code><code class="sig-name descname">Inequality</code><a class="headerlink" href="#inequalities.Inequality" title="Permalink to this definition">¶</a></dt>
-<dd><p>An enumeration.</p>
+<dd><p>The Enum defining the inequality type.
+Currently, it supports T-test and Hoeffding.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="inequalities.eval_estimate">
 <code class="sig-prename descclassname">inequalities.</code><code class="sig-name descname">eval_estimate</code><span class="sig-paren">(</span><em class="sig-param">element</em>, <em class="sig-param">Y</em>, <em class="sig-param">predicted_Y</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#inequalities.eval_estimate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assumes that Y and predicted_y contain 0,1 binary classification
+<dd><p>Estimates the value of the base variable.
+Assumes that Y and predicted_y contain 0,1 binary classification
 Suppose we are calculating for FP(A).
 Assume X to be an indicator function defined only in case type=A
 s.t. x_i = 1 if FP occurred for ith datapoint and x_i = 0 otherwise.
@@ -446,7 +438,28 @@ As we do not know p, we approximate it to hat{p}.</p>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-gather_results"></span><span class="target" id="module-create_plots"></span></div>
+</div>
+<div class="section" id="module-gather_results">
+<span id="viewing-results"></span><h2>Viewing results<a class="headerlink" href="#module-gather_results" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-create_plots"></span><dl class="function">
+<dt id="create_plots.loadAndPlotResults">
+<code class="sig-prename descclassname">create_plots.</code><code class="sig-name descname">loadAndPlotResults</code><span class="sig-paren">(</span><em class="sig-param">fileName</em>, <em class="sig-param">ylabel</em>, <em class="sig-param">output_file</em>, <em class="sig-param">is_yAxis_prob</em>, <em class="sig-param">legend_loc</em><span class="sig-paren">)</span><a class="headerlink" href="#create_plots.loadAndPlotResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to plot the results from the csv files and store the final graph</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The csv file path from where the data is imported</p></li>
+<li><p><strong>ylabel</strong> – The lable on the Y-axis of the graph</p></li>
+<li><p><strong>output_file</strong> – The path where the graph image must be stored</p></li>
+<li><p><strong>is_yAxis_prob</strong> – Bool of whether the Y-axis is probabity value or not</p></li>
+<li><p><strong>legend_loc</strong> – The location of the legend</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
 
 
            </div>

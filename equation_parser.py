@@ -8,7 +8,7 @@ from inequalities import *
 ####################
 class expr_tree:
     """
-    An expression tree node
+    An expression tree node of the constraint tree
     """
     def __init__(self, value):
         """
@@ -21,33 +21,27 @@ class expr_tree:
 
 
 def isOperator(element):
-    """
     # A utility function to check if 'element' is an operator
-    :param element: expr_tree node
-    :return: bool
-    """
+    #:param element: expr_tree node
+    #:return: bool
     if element == '+' or element == '-' or element == '*' or element == '/' or element == '^':
         return True
     return False
 
 
 def isMod(element):
-    """
-    A utility function to check if 'element' is mod function
-    :param element: expr_tree node
-    :return: bool
-    """
+    # A utility function to check if 'element' is mod function
+    # :param element: expr_tree node
+    # :return: bool
     if element == "abs":
         return True
     return False
 
 
 def isFunc(element):
-    """
-    A utility function to check if 'element' is one of FP, FN, TP, TN
-    :param element: expr_tree node
-    :return: bool
-    """
+    # A utility function to check if 'element' is one of FP, FN, TP, TN
+    # :param element: expr_tree node
+    # :return: bool
     if element.startswith("FP") or element.startswith("FN") or element.startswith("TP") or element.startswith("TN"):
         return True
     return False
@@ -95,7 +89,8 @@ def construct_expr_tree_base(rev_polish_notation):
 #################
 def eval_expr_tree_base(t_node, Y, predicted_Y, T):
     """
-    To evaluate estimate of the expression tree
+    A utility function to evaluate estimate of the expression tree
+
     :param t_node: expr_tree node
     :param Y: pandas::Series
     :param predicted_Y: tensor
@@ -140,12 +135,17 @@ def eval_expr_tree_conf_interval_base(t_node, Y, predicted_Y, T, delta, inequali
                                       candidate_safety_ratio, predict_bound, modified_h):
     """
     To evaluate confidence interval of the expression tree
+
     :param t_node: expr_tree node
-    :param Y: pandas::Series
-    :param predicted_Y: tensor
-    :param T: pandas::Series
-    :param conf_prob: float in [0, 1]
-    :return:
+    :param Y: pandas::Series The true labels of the dataset
+    :param predicted_Y: tensor The predicted labels of the dataset
+    :param T: pandas::Series The sensitive attributes of the dataset
+    :param delta: float in [0, 1] The significance level
+    :param inequality: Enum The inequality to be used - Hoeffding/T-test
+    :param candidate_safety_ratio: The candidate to dafety ratio used in the experiment
+    :param predict_bound: Bool to tell whether we are finding bound for candidate or safety data
+    :param modified_h: Bool to tell whether or not modified confidence bound is to be used
+    :return: upper and lower bound of the estimate of the constraint
     """
     if t_node is not None:
         if t_node.right is not None and t_node.right.value is not None:
@@ -193,7 +193,8 @@ def eval_expr_tree_conf_interval_base(t_node, Y, predicted_Y, T, delta, inequali
 ##############
 def inorder(t_node):
     """
-    A utility function to do inorder traversal
+    A utility function to print inorder traversal
+
     :param t_node: expr_tree node
     :return: None
     """
