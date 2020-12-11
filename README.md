@@ -1,5 +1,5 @@
 # Fair Seldonian
-This repository contains the implementation related to the study for fairness using Seldonian algorithms and various bound optmization extensions, under the guidance of Philip Thomas, UMass Amherst.
+This repository contains the implementation related to the study for fairness using Seldonian algorithms and various bound optmization extensions, under the guidance of Dr Philip S Thomas, UMass Amherst.
 
 ## Quick start
 The wiki for this repository can be accessed in the github page: https://parul100495.github.io/fair-seldonian/index.html
